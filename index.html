@@ -17,16 +17,16 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-            padding-bottom: 40px;
+            padding-bottom: 30px;
             user-select: none;
             -webkit-user-select: none;
         }
         
         .container {
-            max-width: 500px;
+            max-width: 800px;
             margin: 0 auto;
         }
         
@@ -48,6 +48,7 @@
         .word-count {
             font-size: 14px;
             opacity: 0.9;
+            margin-bottom: 10px;
         }
         
         /* 菜单按钮 */
@@ -112,144 +113,143 @@
             text-align: center;
         }
         
-        /* 单词卡片 */
-        .word-card {
-            background: white;
-            border-radius: 25px;
-            padding: 40px 20px;
-            margin: 20px 0;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            text-align: center;
-            min-height: 280px;
+        /* 分页控制 */
+        .pagination-controls {
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            color: white;
+        }
+        
+        .page-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            color: white;
+            font-size: 18px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.3s;
+        }
+        
+        .page-btn:active {
+            background: rgba(255,255,255,0.3);
+            transform: scale(0.95);
+        }
+        
+        .page-info {
+            font-size: 16px;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        /* 单词卡片区域 */
+        .word-cards-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+            padding: 25px;
+            margin: 15px 0;
+            min-height: 500px;
             position: relative;
             overflow: hidden;
         }
         
-        .word-card:active {
-            transform: scale(0.98);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        .word-cards-wrapper {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            perspective: 1000px;
         }
         
-        .english-word {
-            font-size: 52px;
+        .word-card-item {
+            position: absolute;
+            background: white;
+            border-radius: 20px;
+            padding: 15px 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            word-break: break-word;
+            border: 3px solid transparent;
+            transform-origin: center;
+        }
+        
+        .word-card-item:active {
+            transform: scale(0.95);
+        }
+        
+        .word-card-item.showing-chinese {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, #ffffff, #f0fff0);
+        }
+        
+        .word-english {
+            font-size: 24px;
             font-weight: bold;
             color: #2196F3;
-            margin-bottom: 20px;
-            line-height: 1.2;
-            word-break: break-word;
-            max-width: 100%;
+            margin-bottom: 8px;
             text-shadow: 0 2px 4px rgba(33,150,243,0.1);
         }
         
-        .hint {
-            font-size: 14px;
-            color: #999;
-            margin: 10px 0;
-            font-style: italic;
-        }
-        
-        .chinese-word {
-            font-size: 38px;
+        .word-chinese {
+            font-size: 20px;
             color: #4CAF50;
-            margin-top: 15px;
             font-weight: 500;
-            line-height: 1.3;
-            text-shadow: 0 2px 4px rgba(76,175,80,0.1);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
         }
         
-        /* 控制按钮 */
-        .controls {
+        .word-card-item.showing-chinese .word-chinese {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 控制按钮区域 */
+        .controls-area {
             display: flex;
-            justify-content: space-between;
-            margin: 30px 0;
-            gap: 15px;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
         }
         
-        .btn {
-            flex: 1;
-            background: white;
-            border: none;
-            border-radius: 15px;
-            padding: 18px 10px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .btn-icon {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        .btn-shuffle {
+        .control-btn {
             background: linear-gradient(135deg, #FF9800, #FF5722);
-            color: white;
-            flex: 1.2;
-        }
-        
-        /* 主要按钮 */
-        .main-btn {
-            background: linear-gradient(135deg, #2196F3, #1976D2);
             border: none;
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 20px;
+            padding: 18px 30px;
             font-size: 18px;
             font-weight: 600;
             color: white;
             cursor: pointer;
-            box-shadow: 0 10px 20px rgba(33,150,243,0.3);
-            width: 100%;
+            box-shadow: 0 10px 20px rgba(255,87,34,0.3);
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 10px;
+            min-width: 160px;
+            justify-content: center;
         }
         
-        .main-btn:active {
+        .control-btn:active {
             transform: translateY(2px);
-            box-shadow: 0 5px 10px rgba(33,150,243,0.2);
+            box-shadow: 0 5px 10px rgba(255,87,34,0.2);
         }
         
-        /* 页码指示器 */
-        .pagination {
-            color: white;
-            text-align: center;
-            margin-top: 20px;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .current-page {
-            font-size: 28px;
-            font-weight: bold;
-            color: #FFEB3B;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .total-pages {
-            opacity: 0.8;
+        .control-btn.prev-next {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            box-shadow: 0 10px 20px rgba(33,150,243,0.3);
         }
         
         /* 模态框 */
@@ -376,10 +376,11 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             pointer-events: none;
             opacity: 0;
+            z-index: 1;
         }
         
         .wave {
@@ -404,8 +405,8 @@
                 opacity: 1;
             }
             100% {
-                width: 100px;
-                height: 100px;
+                width: 80px;
+                height: 80px;
                 opacity: 0;
             }
         }
@@ -415,6 +416,7 @@
             text-align: center;
             color: white;
             padding: 60px 20px;
+            display: none;
         }
         
         .empty-icon {
@@ -429,22 +431,74 @@
         }
         
         /* 响应式调整 */
-        @media (max-width: 480px) {
-            .english-word {
-                font-size: 42px;
+        @media (max-width: 768px) {
+            .word-cards-container {
+                padding: 15px;
+                min-height: 450px;
             }
             
-            .chinese-word {
-                font-size: 32px;
+            .word-cards-wrapper {
+                height: 450px;
             }
             
-            .btn {
-                padding: 15px 8px;
-                font-size: 14px;
+            .word-card-item {
+                padding: 12px 15px;
             }
             
-            .btn-icon {
+            .word-english {
                 font-size: 20px;
+            }
+            
+            .word-chinese {
+                font-size: 18px;
+            }
+            
+            .controls-area {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .control-btn {
+                min-width: 140px;
+                padding: 16px 20px;
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .word-cards-container {
+                min-height: 400px;
+            }
+            
+            .word-cards-wrapper {
+                height: 400px;
+            }
+            
+            .word-card-item {
+                padding: 10px 12px;
+            }
+            
+            .word-english {
+                font-size: 18px;
+            }
+            
+            .word-chinese {
+                font-size: 16px;
+            }
+            
+            .control-btn {
+                min-width: 120px;
+                padding: 14px 15px;
+                font-size: 15px;
+            }
+            
+            .pagination-controls {
+                gap: 8px;
+            }
+            
+            .page-info {
+                min-width: 80px;
+                font-size: 14px;
             }
         }
     </style>
@@ -454,7 +508,7 @@
         <!-- 头部 -->
         <div class="header">
             <h1>📚 单词学习</h1>
-            <div class="word-count" id="wordCount">5个单词</div>
+            <div class="word-count" id="wordCount">共5个单词</div>
             <button class="menu-toggle" id="menuToggle">⋮</button>
             <div class="menu" id="menu">
                 <div class="menu-item" onclick="showAddWordModal()">
@@ -480,54 +534,46 @@
             </div>
         </div>
         
-        <!-- 单词卡片 -->
-        <div class="word-card" id="wordCard">
+        <!-- 分页控制 -->
+        <div class="pagination-controls" id="paginationControls">
+            <button class="page-btn" onclick="prevPage()">◀</button>
+            <div class="page-info" id="pageInfo">第1页 / 共1页</div>
+            <button class="page-btn" onclick="nextPage()">▶</button>
+        </div>
+        
+        <!-- 单词卡片区域 -->
+        <div class="word-cards-container">
             <div class="speaking-animation" id="speakingAnimation">
                 <div class="wave"></div>
                 <div class="wave"></div>
                 <div class="wave"></div>
             </div>
-            <div class="english-word" id="englishWord">apple</div>
-            <div class="hint">点击卡片朗读发音</div>
-            <div class="chinese-word" id="chineseWord" style="display: none;">苹果</div>
+            <div class="word-cards-wrapper" id="wordCardsWrapper">
+                <!-- 单词卡片会动态生成在这里 -->
+            </div>
         </div>
         
         <!-- 空状态 -->
-        <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-state" id="emptyState">
             <div class="empty-icon">📚</div>
             <div class="empty-text">词库为空，开始添加单词吧！</div>
-            <button class="main-btn" onclick="showAddWordModal()">
+            <button class="control-btn" onclick="showAddWordModal()">
                 <span>➕</span> 添加第一个单词
             </button>
         </div>
         
-        <!-- 页码指示器 -->
-        <div class="pagination" id="pagination">
-            <span class="current-page" id="currentPage">1</span>
-            <span>/</span>
-            <span class="total-pages" id="totalPages">5</span>
-        </div>
-        
         <!-- 控制按钮 -->
-        <div class="controls" id="controls">
-            <button class="btn" onclick="prevWord()">
-                <div class="btn-icon">⬅️</div>
-                <div>上一个</div>
+        <div class="controls-area" id="controlsArea">
+            <button class="control-btn prev-next" onclick="prevPage()">
+                <span>◀</span> 上一页
             </button>
-            <button class="btn btn-shuffle" onclick="shuffleWords()">
-                <div class="btn-icon">🔀</div>
-                <div>乱序</div>
+            <button class="control-btn" onclick="shuffleCurrentPage()">
+                <span>🔀</span> 乱序排列
             </button>
-            <button class="btn" onclick="nextWord()">
-                <div class="btn-icon">➡️</div>
-                <div>下一个</div>
+            <button class="control-btn prev-next" onclick="nextPage()">
+                下一页 <span>▶</span>
             </button>
         </div>
-        
-        <!-- 朗读按钮 -->
-        <button class="main-btn" onclick="speakWord()">
-            <span>🔊</span> 朗读单词
-        </button>
     </div>
     
     <!-- 添加单词模态框 -->
@@ -589,18 +635,66 @@
     <div class="toast" id="toast"></div>
     
     <script>
-        // 词库数据 - 初始示例单词
+        // 词库数据 - 初始示例单词（更多单词方便测试分页）
         let words = [
             { english: 'apple', chinese: '苹果' },
             { english: 'computer', chinese: '电脑' },
             { english: 'programming', chinese: '编程' },
             { english: 'development', chinese: '开发' },
-            { english: 'hello', chinese: '你好' }
+            { english: 'hello', chinese: '你好' },
+            { english: 'world', chinese: '世界' },
+            { english: 'software', chinese: '软件' },
+            { english: 'hardware', chinese: '硬件' },
+            { english: 'network', chinese: '网络' },
+            { english: 'database', chinese: '数据库' },
+            { english: 'algorithm', chinese: '算法' },
+            { english: 'variable', chinese: '变量' },
+            { english: 'function', chinese: '函数' },
+            { english: 'class', chinese: '类' },
+            { english: 'object', chinese: '对象' },
+            { english: 'interface', chinese: '接口' },
+            { english: 'method', chinese: '方法' },
+            { english: 'property', chinese: '属性' },
+            { english: 'event', chinese: '事件' },
+            { english: 'callback', chinese: '回调' },
+            { english: 'promise', chinese: '承诺' },
+            { english: 'async', chinese: '异步' },
+            { english: 'await', chinese: '等待' },
+            { english: 'framework', chinese: '框架' },
+            { english: 'library', chinese: '库' },
+            { english: 'module', chinese: '模块' },
+            { english: 'package', chinese: '包' },
+            { english: 'dependency', chinese: '依赖' },
+            { english: 'configuration', chinese: '配置' },
+            { english: 'environment', chinese: '环境' },
+            { english: 'deployment', chinese: '部署' },
+            { english: 'maintenance', chinese: '维护' },
+            { english: 'optimization', chinese: '优化' },
+            { english: 'performance', chinese: '性能' },
+            { english: 'security', chinese: '安全' },
+            { english: 'authentication', chinese: '认证' },
+            { english: 'authorization', chinese: '授权' },
+            { english: 'encryption', chinese: '加密' },
+            { english: 'decryption', chinese: '解密' },
+            { english: 'compression', chinese: '压缩' },
+            { english: 'decompression', chinese: '解压' },
+            { english: 'serialization', chinese: '序列化' },
+            { english: 'deserialization', chinese: '反序列化' },
+            { english: 'validation', chinese: '验证' },
+            { english: 'verification', chinese: '校验' },
+            { english: 'initialization', chinese: '初始化' },
+            { english: 'termination', chinese: '终止' },
+            { english: 'exception', chinese: '异常' },
+            { english: 'error', chinese: '错误' },
+            { english: 'debug', chinese: '调试' },
+            { english: 'test', chinese: '测试' }
         ];
         
-        let currentIndex = 0;
+        const WORDS_PER_PAGE = 20;  // 每页显示20个单词
+        let currentPage = 0;        // 当前页码（从0开始）
         let isSpeaking = false;
         let speech = null;
+        let currentPageWords = [];  // 当前页的单词（乱序后的）
         
         // 显示提示信息
         function showToast(message, duration = 2000) {
@@ -624,22 +718,15 @@
         }
         
         // 朗读单词
-        function speakWord() {
-            if (words.length === 0) {
-                showToast('请先添加单词');
-                return;
-            }
-            
+        function speakWord(word) {
             if (!speech) initSpeech();
-            
-            const word = words[currentIndex];
             
             // 显示语音动画
             const animation = document.getElementById('speakingAnimation');
             animation.style.opacity = '1';
             
             // 创建语音
-            const utterance = new SpeechSynthesisUtterance(word.english);
+            const utterance = new SpeechSynthesisUtterance(word);
             utterance.lang = 'en-US';
             utterance.rate = 0.8;
             utterance.pitch = 1.0;
@@ -647,18 +734,12 @@
             // 语音开始事件
             utterance.onstart = function() {
                 isSpeaking = true;
-                showChinese();
-                // 卡片动画
-                const card = document.getElementById('wordCard');
-                card.style.transform = 'scale(0.98)';
             };
             
             // 语音结束事件
             utterance.onend = function() {
                 isSpeaking = false;
                 animation.style.opacity = '0';
-                const card = document.getElementById('wordCard');
-                card.style.transform = 'scale(1)';
             };
             
             // 语音错误事件
@@ -672,106 +753,275 @@
             speech.speak(utterance);
         }
         
-        // 显示中文释义
-        function showChinese() {
-            document.getElementById('chineseWord').style.display = 'block';
+        // 获取当前页的单词
+        function getCurrentPageWords() {
+            const startIndex = currentPage * WORDS_PER_PAGE;
+            const endIndex = startIndex + WORDS_PER_PAGE;
+            return words.slice(startIndex, endIndex);
         }
         
-        // 隐藏中文释义
-        function hideChinese() {
-            document.getElementById('chineseWord').style.display = 'none';
+        // 计算总页数
+        function getTotalPages() {
+            return Math.ceil(words.length / WORDS_PER_PAGE);
         }
         
-        // 更新显示
-        function updateDisplay() {
-            if (words.length === 0) {
-                // 显示空状态
-                document.getElementById('wordCard').style.display = 'none';
-                document.getElementById('controls').style.display = 'none';
-                document.getElementById('pagination').style.display = 'none';
-                document.getElementById('emptyState').style.display = 'block';
-                document.getElementById('wordCount').textContent = '0个单词';
-            } else {
-                // 显示单词
-                const word = words[currentIndex];
-                document.getElementById('englishWord').textContent = word.english;
-                document.getElementById('chineseWord').textContent = word.chinese;
-                document.getElementById('currentPage').textContent = currentIndex + 1;
-                document.getElementById('totalPages').textContent = words.length;
-                document.getElementById('wordCount').textContent = `${words.length}个单词`;
+        // 生成随机位置
+        function generateRandomPositions(count) {
+            const positions = [];
+            const containerWidth = document.getElementById('wordCardsWrapper').offsetWidth;
+            const containerHeight = document.getElementById('wordCardsWrapper').offsetHeight;
+            
+            for (let i = 0; i < count; i++) {
+                // 随机生成字体大小 (16px - 32px)
+                const fontSize = 16 + Math.random() * 16;
                 
-                // 显示正常状态
-                document.getElementById('wordCard').style.display = 'flex';
-                document.getElementById('controls').style.display = 'flex';
-                document.getElementById('pagination').style.display = 'flex';
-                document.getElementById('emptyState').style.display = 'none';
+                // 随机生成卡片大小
+                const wordLength = currentPageWords[i].english.length;
+                const baseSize = Math.max(80, wordLength * fontSize * 0.8);
+                const width = baseSize + Math.random() * 40;
+                const height = width * 0.8;
+                
+                // 随机位置，确保卡片在容器内
+                const maxX = containerWidth - width - 20;
+                const maxY = containerHeight - height - 20;
+                
+                let x, y;
+                let attempts = 0;
+                let validPosition = false;
+                
+                // 尝试找到不重叠的位置
+                while (!validPosition && attempts < 100) {
+                    x = 10 + Math.random() * maxX;
+                    y = 10 + Math.random() * maxY;
+                    
+                    validPosition = true;
+                    
+                    // 检查是否与其他卡片重叠
+                    for (let j = 0; j < positions.length; j++) {
+                        const otherPos = positions[j];
+                        const distance = Math.sqrt(
+                            Math.pow(x - otherPos.x, 2) + 
+                            Math.pow(y - otherPos.y, 2)
+                        );
+                        
+                        // 如果距离太近，认为重叠
+                        if (distance < (width + otherPos.width) * 0.6) {
+                            validPosition = false;
+                            break;
+                        }
+                    }
+                    
+                    attempts++;
+                }
+                
+                // 如果找不到合适位置，使用随机位置
+                if (!validPosition) {
+                    x = 10 + Math.random() * maxX;
+                    y = 10 + Math.random() * maxY;
+                }
+                
+                // 随机旋转角度 (-15度 到 15度)
+                const rotation = -15 + Math.random() * 30;
+                
+                // 随机颜色
+                const hue = Math.floor(Math.random() * 360);
+                const bgColor = `hsl(${hue}, 90%, 95%)`;
+                const borderColor = `hsl(${hue}, 70%, 70%)`;
+                
+                positions.push({
+                    x, y, width, height, rotation,
+                    fontSize, bgColor, borderColor
+                });
             }
             
-            hideChinese();
-            saveToLocalStorage();
+            return positions;
         }
         
-        // 下一个单词
-        function nextWord() {
-            if (words.length === 0) return;
+        // 渲染单词卡片
+        function renderWordCards() {
+            const wrapper = document.getElementById('wordCardsWrapper');
+            wrapper.innerHTML = '';
             
-            currentIndex = (currentIndex + 1) % words.length;
-            updateDisplay();
-            
-            // 简单动画
-            const card = document.getElementById('wordCard');
-            card.style.opacity = '0.5';
-            setTimeout(() => {
-                card.style.opacity = '1';
-            }, 150);
-        }
-        
-        // 上一个单词
-        function prevWord() {
-            if (words.length === 0) return;
-            
-            currentIndex = (currentIndex - 1 + words.length) % words.length;
-            updateDisplay();
-            
-            // 简单动画
-            const card = document.getElementById('wordCard');
-            card.style.opacity = '0.5';
-            setTimeout(() => {
-                card.style.opacity = '1';
-            }, 150);
-        }
-        
-        // 乱序单词
-        function shuffleWords() {
-            if (words.length === 0) {
-                showToast('请先添加单词');
+            if (currentPageWords.length === 0) {
+                document.getElementById('wordCardsContainer').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('paginationControls').style.display = 'none';
+                document.getElementById('controlsArea').style.display = 'none';
                 return;
             }
             
-            if (words.length === 1) {
-                showToast('只有一个单词，无需乱序');
+            document.getElementById('wordCardsContainer').style.display = 'block';
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('paginationControls').style.display = 'flex';
+            document.getElementById('controlsArea').style.display = 'flex';
+            
+            // 生成随机位置
+            const positions = generateRandomPositions(currentPageWords.length);
+            
+            // 创建卡片元素
+            currentPageWords.forEach((word, index) => {
+                const pos = positions[index];
+                
+                const card = document.createElement('div');
+                card.className = 'word-card-item';
+                card.dataset.index = index;
+                
+                // 设置卡片样式
+                card.style.left = `${pos.x}px`;
+                card.style.top = `${pos.y}px`;
+                card.style.width = `${pos.width}px`;
+                card.style.height = `${pos.height}px`;
+                card.style.transform = `rotate(${pos.rotation}deg)`;
+                card.style.background = pos.bgColor;
+                card.style.borderColor = pos.borderColor;
+                card.style.zIndex = index;
+                
+                // 创建内容
+                const englishDiv = document.createElement('div');
+                englishDiv.className = 'word-english';
+                englishDiv.textContent = word.english;
+                englishDiv.style.fontSize = `${pos.fontSize}px`;
+                
+                const chineseDiv = document.createElement('div');
+                chineseDiv.className = 'word-chinese';
+                chineseDiv.textContent = word.chinese;
+                chineseDiv.style.fontSize = `${pos.fontSize * 0.8}px`;
+                
+                card.appendChild(englishDiv);
+                card.appendChild(chineseDiv);
+                
+                // 点击事件
+                card.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // 朗读单词
+                    speakWord(word.english);
+                    
+                    // 显示中文
+                    this.classList.add('showing-chinese');
+                    
+                    // 3秒后自动隐藏中文
+                    setTimeout(() => {
+                        this.classList.remove('showing-chinese');
+                    }, 3000);
+                    
+                    // 点击动画
+                    this.style.zIndex = 999;
+                    this.style.transform = `rotate(${pos.rotation}deg) scale(1.1)`;
+                    this.style.boxShadow = '0 15px 35px rgba(0,0,0,0.2)';
+                    
+                    setTimeout(() => {
+                        this.style.transform = `rotate(${pos.rotation}deg) scale(1)`;
+                        this.style.boxShadow = '';
+                        setTimeout(() => {
+                            this.style.zIndex = index;
+                        }, 300);
+                    }, 300);
+                });
+                
+                wrapper.appendChild(card);
+            });
+            
+            // 更新页码信息
+            updatePageInfo();
+        }
+        
+        // 更新页码信息
+        function updatePageInfo() {
+            const totalPages = getTotalPages();
+            document.getElementById('pageInfo').textContent = 
+                `第${currentPage + 1}页 / 共${totalPages}页`;
+            document.getElementById('wordCount').textContent = 
+                `共${words.length}个单词`;
+                
+            // 更新按钮状态
+            const prevBtns = document.querySelectorAll('.page-btn, .control-btn.prev-next');
+            prevBtns.forEach(btn => {
+                if (btn.onclick && btn.onclick.toString().includes('prevPage')) {
+                    btn.style.opacity = currentPage === 0 ? '0.5' : '1';
+                    btn.disabled = currentPage === 0;
+                }
+                if (btn.onclick && btn.onclick.toString().includes('nextPage')) {
+                    btn.style.opacity = currentPage === totalPages - 1 ? '0.5' : '1';
+                    btn.disabled = currentPage === totalPages - 1;
+                }
+            });
+        }
+        
+        // 乱序当前页
+        function shuffleCurrentPage() {
+            if (currentPageWords.length === 0) {
+                showToast('当前页没有单词');
                 return;
             }
             
             // Fisher-Yates 洗牌算法
-            for (let i = words.length - 1; i > 0; i--) {
+            for (let i = currentPageWords.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [words[i], words[j]] = [words[j], words[i]];
+                [currentPageWords[i], currentPageWords[j]] = [currentPageWords[j], currentPageWords[i]];
             }
             
-            currentIndex = 0;
-            updateDisplay();
-            showToast('单词已乱序排列');
+            // 重新渲染卡片
+            renderWordCards();
+            showToast('当前页单词已重新排列');
             
-            // 乱序动画
-            const card = document.getElementById('wordCard');
-            card.style.transform = 'rotate(5deg) scale(1.05)';
-            setTimeout(() => {
-                card.style.transform = 'rotate(-5deg) scale(0.95)';
+            // 乱序动画效果
+            const cards = document.querySelectorAll('.word-card-item');
+            cards.forEach((card, index) => {
+                card.style.transition = 'all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                
+                // 先消失
                 setTimeout(() => {
-                    card.style.transform = 'rotate(0deg) scale(1)';
-                }, 150);
-            }, 150);
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.5) rotate(180deg)';
+                }, index * 50);
+                
+                // 再出现
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1) rotate(0deg)';
+                }, 500 + index * 50);
+            });
+            
+            // 恢复默认过渡
+            setTimeout(() => {
+                cards.forEach(card => {
+                    card.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                });
+            }, 1500);
+        }
+        
+        // 下一页
+        function nextPage() {
+            const totalPages = getTotalPages();
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                currentPageWords = getCurrentPageWords();
+                renderWordCards();
+                
+                // 翻页动画
+                const wrapper = document.getElementById('wordCardsWrapper');
+                wrapper.style.opacity = '0';
+                setTimeout(() => {
+                    wrapper.style.opacity = '1';
+                }, 300);
+            }
+        }
+        
+        // 上一页
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                currentPageWords = getCurrentPageWords();
+                renderWordCards();
+                
+                // 翻页动画
+                const wrapper = document.getElementById('wordCardsWrapper');
+                wrapper.style.opacity = '0';
+                setTimeout(() => {
+                    wrapper.style.opacity = '1';
+                }, 300);
+            }
         }
         
         // 显示添加单词模态框
@@ -815,21 +1065,18 @@
             
             words.push({ english, chinese });
             
-            // 如果是第一个单词，跳转到这个单词
-            if (words.length === 1) {
-                currentIndex = 0;
+            // 如果添加后需要创建新页，跳转到新页
+            const oldTotalPages = getTotalPages();
+            const newTotalPages = Math.ceil(words.length / WORDS_PER_PAGE);
+            
+            if (newTotalPages > oldTotalPages) {
+                currentPage = newTotalPages - 1;
             }
             
+            currentPageWords = getCurrentPageWords();
             updateDisplay();
             hideAddWordModal();
             showToast('单词添加成功！');
-            
-            // 自动朗读新单词
-            setTimeout(() => {
-                if (words.length === 1) {
-                    speakWord();
-                }
-            }, 500);
         }
         
         // 显示导入模态框
@@ -869,7 +1116,8 @@
                 }
                 
                 words = imported;
-                currentIndex = 0;
+                currentPage = 0;
+                currentPageWords = getCurrentPageWords();
                 updateDisplay();
                 hideImportModal();
                 showToast(`成功导入${words.length}个单词`);
@@ -920,7 +1168,8 @@
         // 清空词库
         function clearWords() {
             words = [];
-            currentIndex = 0;
+            currentPage = 0;
+            currentPageWords = [];
             updateDisplay();
             hideClearModal();
             showToast('词库已清空');
@@ -930,23 +1179,32 @@
         function showHelp() {
             const helpText = 
                 '💡 使用帮助：\n\n' +
-                '1. 点击单词卡片：朗读发音并显示中文\n' +
-                '2. 左右箭头：切换上一个/下一个单词\n' +
-                '3. 乱序按钮：重新随机排列单词\n' +
+                '1. 点击任意单词卡片：朗读发音并显示中文\n' +
+                '2. 左右翻页按钮：切换不同页面（每页20词）\n' +
+                '3. 乱序排列按钮：重新随机排列当前页单词\n' +
                 '4. 添加单词：右上角菜单 → 添加单词\n' +
                 '5. 导入词库：支持JSON格式文件\n' +
                 '6. 导出词库：备份当前词库\n\n' +
+                '📱 点击单词时：自动朗读英文，显示中文3秒\n' +
+                '🎯 乱序排列：每次点击都会完全打乱位置\n\n' +
                 '📱 添加到主屏幕：\n' +
                 '用Safari打开 → 分享 → 添加到主屏幕';
             
             alert(helpText);
         }
         
+        // 更新显示
+        function updateDisplay() {
+            currentPageWords = getCurrentPageWords();
+            renderWordCards();
+            saveToLocalStorage();
+        }
+        
         // 保存到本地存储
         function saveToLocalStorage() {
             try {
                 localStorage.setItem('wordLearnerData', JSON.stringify(words));
-                localStorage.setItem('wordLearnerIndex', currentIndex.toString());
+                localStorage.setItem('wordLearnerPage', currentPage.toString());
             } catch (e) {
                 console.error('保存到本地存储失败:', e);
             }
@@ -960,16 +1218,16 @@
                     words = JSON.parse(saved);
                 }
                 
-                const savedIndex = localStorage.getItem('wordLearnerIndex');
-                if (savedIndex) {
-                    const index = parseInt(savedIndex);
-                    if (!isNaN(index) && index >= 0 && index < words.length) {
-                        currentIndex = index;
+                const savedPage = localStorage.getItem('wordLearnerPage');
+                if (savedPage) {
+                    const page = parseInt(savedPage);
+                    const totalPages = Math.ceil(words.length / WORDS_PER_PAGE);
+                    if (!isNaN(page) && page >= 0 && page < totalPages) {
+                        currentPage = page;
                     }
                 }
             } catch (e) {
                 console.error('从本地存储加载失败:', e);
-                words = words; // 保持默认数据
             }
         }
         
@@ -983,10 +1241,8 @@
         function init() {
             initSpeech();
             loadFromLocalStorage();
+            currentPageWords = getCurrentPageWords();
             updateDisplay();
-            
-            // 点击单词卡片朗读
-            document.getElementById('wordCard').addEventListener('click', speakWord);
             
             // 菜单按钮事件
             document.getElementById('menuToggle').addEventListener('click', toggleMenu);
@@ -1020,6 +1276,17 @@
                 }
             });
             
+            // 窗口大小变化时重新布局
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    if (currentPageWords.length > 0) {
+                        renderWordCards();
+                    }
+                }, 250);
+            });
+            
             // 注册Service Worker（PWA）
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
@@ -1033,26 +1300,6 @@
                     );
                 });
             }
-            
-            // 添加到主屏幕引导
-            let deferredPrompt;
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                
-                // 可以在这里显示"添加到主屏幕"的提示
-                setTimeout(() => {
-                    if (confirm('想把这个应用添加到主屏幕吗？')) {
-                        deferredPrompt.prompt();
-                        deferredPrompt.userChoice.then((choiceResult) => {
-                            if (choiceResult.outcome === 'accepted') {
-                                console.log('用户同意添加到主屏幕');
-                            }
-                            deferredPrompt = null;
-                        });
-                    }
-                }, 3000);
-            });
         }
         
         // 页面加载完成后初始化
