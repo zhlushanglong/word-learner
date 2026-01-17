@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2196F3">
+    <title>单词学习</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 40px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* 头部 */
+        .header {
+            text-align: center;
+            color: white;
+            padding: 15px 0;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .word-count {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* 菜单按钮 */
+        .menu-toggle {
+            position: absolute;
+            top: 15px;
+            right: 0;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .menu-toggle:active {
+            background: rgba(255,255,255,0.3);
+            transform: scale(0.95);
+        }
+        
+        /* 菜单内容 */
+        .menu {
+            display: none;
+            position: absolute;
+            top: 65px;
+            right: 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            min-width: 200px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .menu-item {
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+        
+        .menu-item:active {
+            background: #f5f5f5;
+        }
+        
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-icon {
+            margin-right: 12px;
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* 单词卡片 */
+        .word-card {
+            background: white;
+            border-radius: 25px;
+            padding: 40px 20px;
+            margin: 20px 0;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            text-align: center;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .word-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .english-word {
+            font-size: 52px;
+            font-weight: bold;
+            color: #2196F3;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            word-break: break-word;
+            max-width: 100%;
+            text-shadow: 0 2px 4px rgba(33,150,243,0.1);
+        }
+        
+        .hint {
+            font-size: 14px;
+            color: #999;
+            margin: 10px 0;
+            font-style: italic;
+        }
+        
+        .chinese-word {
+            font-size: 38px;
+            color: #4CAF50;
+            margin-top: 15px;
+            font-weight: 500;
+            line-height: 1.3;
+            text-shadow: 0 2px 4px rgba(76,175,80,0.1);
+        }
+        
+        /* 控制按钮 */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            gap: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            background: white;
+            border: none;
+            border-radius: 15px;
+            padding: 18px 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .btn-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .btn-shuffle {
+            background: linear-gradient(135deg, #FF9800, #FF5722);
+            color: white;
+            flex: 1.2;
+        }
+        
+        /* 主要按钮 */
+        .main-btn {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(33,150,243,0.3);
+            width: 100%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .main-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 5px 10px rgba(33,150,243,0.2);
+        }
+        
+        /* 页码指示器 */
+        .pagination {
+            color: white;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .current-page {
+            font-size: 28px;
+            font-weight: bold;
+            color: #FFEB3B;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .total-pages {
+            opacity: 0.8;
+        }
+        
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .modal-btn-confirm {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .modal-btn-confirm:active {
+            background: #1976D2;
+        }
+        
+        .modal-btn-cancel {
+            background: #f5f5f5;
+            color: #666;
+        }
+        
+        .modal-btn-cancel:active {
+            background: #e0e0e0;
+        }
+        
+        /* 提示信息 */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            z-index: 3000;
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        /* 语音动画 */
+        .speaking-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        .wave {
+            position: absolute;
+            border: 2px solid #2196F3;
+            border-radius: 50%;
+            animation: ripple 1.5s linear infinite;
+        }
+        
+        .wave:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .wave:nth-child(3) {
+            animation-delay: 1s;
+        }
+        
+        @keyframes ripple {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 100px;
+                height: 100px;
+                opacity: 0;
+            }
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            color: white;
+            padding: 60px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+        
+        .empty-text {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .english-word {
+                font-size: 42px;
+            }
+            
+            .chinese-word {
+                font-size: 32px;
+            }
+            
+            .btn {
+                padding: 15px 8px;
+                font-size: 14px;
+            }
+            
+            .btn-icon {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>📚 单词学习</h1>
+            <div class="word-count" id="wordCount">5个单词</div>
+            <button class="menu-toggle" id="menuToggle">⋮</button>
+            <div class="menu" id="menu">
+                <div class="menu-item" onclick="showAddWordModal()">
+                    <div class="menu-icon">➕</div>
+                    <div>添加单词</div>
+                </div>
+                <div class="menu-item" onclick="showImportModal()">
+                    <div class="menu-icon">📥</div>
+                    <div>导入词库</div>
+                </div>
+                <div class="menu-item" onclick="exportWords()">
+                    <div class="menu-icon">📤</div>
+                    <div>导出词库</div>
+                </div>
+                <div class="menu-item" onclick="showClearModal()">
+                    <div class="menu-icon">🗑️</div>
+                    <div>清空词库</div>
+                </div>
+                <div class="menu-item" onclick="showHelp()">
+                    <div class="menu-icon">❓</div>
+                    <div>使用帮助</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 单词卡片 -->
+        <div class="word-card" id="wordCard">
+            <div class="speaking-animation" id="speakingAnimation">
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+            </div>
+            <div class="english-word" id="englishWord">apple</div>
+            <div class="hint">点击卡片朗读发音</div>
+            <div class="chinese-word" id="chineseWord" style="display: none;">苹果</div>
+        </div>
+        
+        <!-- 空状态 -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon">📚</div>
+            <div class="empty-text">词库为空，开始添加单词吧！</div>
+            <button class="main-btn" onclick="showAddWordModal()">
+                <span>➕</span> 添加第一个单词
+            </button>
+        </div>
+        
+        <!-- 页码指示器 -->
+        <div class="pagination" id="pagination">
+            <span class="current-page" id="currentPage">1</span>
+            <span>/</span>
+            <span class="total-pages" id="totalPages">5</span>
+        </div>
+        
+        <!-- 控制按钮 -->
+        <div class="controls" id="controls">
+            <button class="btn" onclick="prevWord()">
+                <div class="btn-icon">⬅️</div>
+                <div>上一个</div>
+            </button>
+            <button class="btn btn-shuffle" onclick="shuffleWords()">
+                <div class="btn-icon">🔀</div>
+                <div>乱序</div>
+            </button>
+            <button class="btn" onclick="nextWord()">
+                <div class="btn-icon">➡️</div>
+                <div>下一个</div>
+            </button>
+        </div>
+        
+        <!-- 朗读按钮 -->
+        <button class="main-btn" onclick="speakWord()">
+            <span>🔊</span> 朗读单词
+        </button>
+    </div>
+    
+    <!-- 添加单词模态框 -->
+    <div class="modal" id="addWordModal">
+        <div class="modal-content">
+            <div class="modal-title">添加新单词</div>
+            <div class="input-group">
+                <label for="englishInput">英文单词</label>
+                <input type="text" id="englishInput" placeholder="例如：hello" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="chineseInput">中文释义</label>
+                <input type="text" id="chineseInput" placeholder="例如：你好" autocomplete="off">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="hideAddWordModal()">取消</button>
+                <button class="modal-btn modal-btn-confirm" onclick="addWord()">添加</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 导入模态框 -->
+    <div class="modal" id="importModal">
+        <div class="modal-content">
+            <div class="modal-title">导入词库</div>
+            <div style="margin-bottom: 20px; color: #666; line-height: 1.6;">
+                请输入JSON格式的词库：<br>
+                <span style="font-size: 12px; color: #999;">
+                    示例：[{"english":"hello","chinese":"你好"}]
+                </span>
+            </div>
+            <div class="input-group">
+                <textarea id="importInput" placeholder="粘贴JSON内容..." rows="6" 
+                          style="width:100%; padding:12px; border:2px solid #e0e0e0; border-radius:10px; font-size:14px;"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="hideImportModal()">取消</button>
+                <button class="modal-btn modal-btn-confirm" onclick="importWords()">导入</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 清空确认模态框 -->
+    <div class="modal" id="clearModal">
+        <div class="modal-content">
+            <div class="modal-title">⚠️ 确认清空</div>
+            <div style="margin-bottom: 25px; color: #666; text-align: center;">
+                确定要清空所有单词吗？<br>
+                <span style="font-size: 14px; color: #f44336;">此操作不可撤销！</span>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="hideClearModal()">取消</button>
+                <button class="modal-btn modal-btn-confirm" onclick="clearWords()" style="background:#f44336;">清空</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 提示信息 -->
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        // 词库数据 - 初始示例单词
+        let words = [
+            { english: 'apple', chinese: '苹果' },
+            { english: 'computer', chinese: '电脑' },
+            { english: 'programming', chinese: '编程' },
+            { english: 'development', chinese: '开发' },
+            { english: 'hello', chinese: '你好' }
+        ];
+        
+        let currentIndex = 0;
+        let isSpeaking = false;
+        let speech = null;
+        
+        // 显示提示信息
+        function showToast(message, duration = 2000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, duration);
+        }
+        
+        // 初始化语音功能
+        function initSpeech() {
+            if ('speechSynthesis' in window) {
+                speech = window.speechSynthesis;
+                console.log('语音功能初始化成功');
+            } else {
+                showToast('您的浏览器不支持语音功能');
+            }
+        }
+        
+        // 朗读单词
+        function speakWord() {
+            if (words.length === 0) {
+                showToast('请先添加单词');
+                return;
+            }
+            
+            if (!speech) initSpeech();
+            
+            const word = words[currentIndex];
+            
+            // 显示语音动画
+            const animation = document.getElementById('speakingAnimation');
+            animation.style.opacity = '1';
+            
+            // 创建语音
+            const utterance = new SpeechSynthesisUtterance(word.english);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
+            
+            // 语音开始事件
+            utterance.onstart = function() {
+                isSpeaking = true;
+                showChinese();
+                // 卡片动画
+                const card = document.getElementById('wordCard');
+                card.style.transform = 'scale(0.98)';
+            };
+            
+            // 语音结束事件
+            utterance.onend = function() {
+                isSpeaking = false;
+                animation.style.opacity = '0';
+                const card = document.getElementById('wordCard');
+                card.style.transform = 'scale(1)';
+            };
+            
+            // 语音错误事件
+            utterance.onerror = function() {
+                isSpeaking = false;
+                animation.style.opacity = '0';
+                showToast('朗读失败，请重试');
+            };
+            
+            // 开始朗读
+            speech.speak(utterance);
+        }
+        
+        // 显示中文释义
+        function showChinese() {
+            document.getElementById('chineseWord').style.display = 'block';
+        }
+        
+        // 隐藏中文释义
+        function hideChinese() {
+            document.getElementById('chineseWord').style.display = 'none';
+        }
+        
+        // 更新显示
+        function updateDisplay() {
+            if (words.length === 0) {
+                // 显示空状态
+                document.getElementById('wordCard').style.display = 'none';
+                document.getElementById('controls').style.display = 'none';
+                document.getElementById('pagination').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('wordCount').textContent = '0个单词';
+            } else {
+                // 显示单词
+                const word = words[currentIndex];
+                document.getElementById('englishWord').textContent = word.english;
+                document.getElementById('chineseWord').textContent = word.chinese;
+                document.getElementById('currentPage').textContent = currentIndex + 1;
+                document.getElementById('totalPages').textContent = words.length;
+                document.getElementById('wordCount').textContent = `${words.length}个单词`;
+                
+                // 显示正常状态
+                document.getElementById('wordCard').style.display = 'flex';
+                document.getElementById('controls').style.display = 'flex';
+                document.getElementById('pagination').style.display = 'flex';
+                document.getElementById('emptyState').style.display = 'none';
+            }
+            
+            hideChinese();
+            saveToLocalStorage();
+        }
+        
+        // 下一个单词
+        function nextWord() {
+            if (words.length === 0) return;
+            
+            currentIndex = (currentIndex + 1) % words.length;
+            updateDisplay();
+            
+            // 简单动画
+            const card = document.getElementById('wordCard');
+            card.style.opacity = '0.5';
+            setTimeout(() => {
+                card.style.opacity = '1';
+            }, 150);
+        }
+        
+        // 上一个单词
+        function prevWord() {
+            if (words.length === 0) return;
+            
+            currentIndex = (currentIndex - 1 + words.length) % words.length;
+            updateDisplay();
+            
+            // 简单动画
+            const card = document.getElementById('wordCard');
+            card.style.opacity = '0.5';
+            setTimeout(() => {
+                card.style.opacity = '1';
+            }, 150);
+        }
+        
+        // 乱序单词
+        function shuffleWords() {
+            if (words.length === 0) {
+                showToast('请先添加单词');
+                return;
+            }
+            
+            if (words.length === 1) {
+                showToast('只有一个单词，无需乱序');
+                return;
+            }
+            
+            // Fisher-Yates 洗牌算法
+            for (let i = words.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [words[i], words[j]] = [words[j], words[i]];
+            }
+            
+            currentIndex = 0;
+            updateDisplay();
+            showToast('单词已乱序排列');
+            
+            // 乱序动画
+            const card = document.getElementById('wordCard');
+            card.style.transform = 'rotate(5deg) scale(1.05)';
+            setTimeout(() => {
+                card.style.transform = 'rotate(-5deg) scale(0.95)';
+                setTimeout(() => {
+                    card.style.transform = 'rotate(0deg) scale(1)';
+                }, 150);
+            }, 150);
+        }
+        
+        // 显示添加单词模态框
+        function showAddWordModal() {
+            document.getElementById('englishInput').value = '';
+            document.getElementById('chineseInput').value = '';
+            document.getElementById('addWordModal').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('englishInput').focus();
+            }, 100);
+        }
+        
+        // 隐藏添加单词模态框
+        function hideAddWordModal() {
+            document.getElementById('addWordModal').style.display = 'none';
+        }
+        
+        // 添加单词
+        function addWord() {
+            const english = document.getElementById('englishInput').value.trim();
+            const chinese = document.getElementById('chineseInput').value.trim();
+            
+            if (!english) {
+                showToast('请输入英文单词');
+                document.getElementById('englishInput').focus();
+                return;
+            }
+            
+            if (!chinese) {
+                showToast('请输入中文释义');
+                document.getElementById('chineseInput').focus();
+                return;
+            }
+            
+            // 检查是否已存在
+            const exists = words.some(w => w.english.toLowerCase() === english.toLowerCase());
+            if (exists) {
+                showToast('该单词已存在');
+                return;
+            }
+            
+            words.push({ english, chinese });
+            
+            // 如果是第一个单词，跳转到这个单词
+            if (words.length === 1) {
+                currentIndex = 0;
+            }
+            
+            updateDisplay();
+            hideAddWordModal();
+            showToast('单词添加成功！');
+            
+            // 自动朗读新单词
+            setTimeout(() => {
+                if (words.length === 1) {
+                    speakWord();
+                }
+            }, 500);
+        }
+        
+        // 显示导入模态框
+        function showImportModal() {
+            document.getElementById('importInput').value = '';
+            document.getElementById('importModal').style.display = 'flex';
+        }
+        
+        // 隐藏导入模态框
+        function hideImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+        }
+        
+        // 导入词库
+        function importWords() {
+            const json = document.getElementById('importInput').value.trim();
+            
+            if (!json) {
+                showToast('请输入JSON内容');
+                return;
+            }
+            
+            try {
+                const imported = JSON.parse(json);
+                
+                if (!Array.isArray(imported)) {
+                    showToast('JSON必须是数组格式');
+                    return;
+                }
+                
+                // 验证格式
+                for (let item of imported) {
+                    if (!item.english || !item.chinese) {
+                        showToast('每个单词必须包含english和chinese字段');
+                        return;
+                    }
+                }
+                
+                words = imported;
+                currentIndex = 0;
+                updateDisplay();
+                hideImportModal();
+                showToast(`成功导入${words.length}个单词`);
+                
+            } catch (e) {
+                showToast('JSON格式错误，请检查');
+                console.error(e);
+            }
+        }
+        
+        // 导出词库
+        function exportWords() {
+            if (words.length === 0) {
+                showToast('词库为空，无法导出');
+                return;
+            }
+            
+            const json = JSON.stringify(words, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            // 创建下载链接
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `我的词库_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            URL.revokeObjectURL(url);
+            showToast('词库已导出为JSON文件');
+        }
+        
+        // 显示清空确认模态框
+        function showClearModal() {
+            if (words.length === 0) {
+                showToast('词库已为空');
+                return;
+            }
+            document.getElementById('clearModal').style.display = 'flex';
+        }
+        
+        // 隐藏清空确认模态框
+        function hideClearModal() {
+            document.getElementById('clearModal').style.display = 'none';
+        }
+        
+        // 清空词库
+        function clearWords() {
+            words = [];
+            currentIndex = 0;
+            updateDisplay();
+            hideClearModal();
+            showToast('词库已清空');
+        }
+        
+        // 显示帮助
+        function showHelp() {
+            const helpText = 
+                '💡 使用帮助：\n\n' +
+                '1. 点击单词卡片：朗读发音并显示中文\n' +
+                '2. 左右箭头：切换上一个/下一个单词\n' +
+                '3. 乱序按钮：重新随机排列单词\n' +
+                '4. 添加单词：右上角菜单 → 添加单词\n' +
+                '5. 导入词库：支持JSON格式文件\n' +
+                '6. 导出词库：备份当前词库\n\n' +
+                '📱 添加到主屏幕：\n' +
+                '用Safari打开 → 分享 → 添加到主屏幕';
+            
+            alert(helpText);
+        }
+        
+        // 保存到本地存储
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('wordLearnerData', JSON.stringify(words));
+                localStorage.setItem('wordLearnerIndex', currentIndex.toString());
+            } catch (e) {
+                console.error('保存到本地存储失败:', e);
+            }
+        }
+        
+        // 从本地存储加载
+        function loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem('wordLearnerData');
+                if (saved) {
+                    words = JSON.parse(saved);
+                }
+                
+                const savedIndex = localStorage.getItem('wordLearnerIndex');
+                if (savedIndex) {
+                    const index = parseInt(savedIndex);
+                    if (!isNaN(index) && index >= 0 && index < words.length) {
+                        currentIndex = index;
+                    }
+                }
+            } catch (e) {
+                console.error('从本地存储加载失败:', e);
+                words = words; // 保持默认数据
+            }
+        }
+        
+        // 菜单切换
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        // 初始化
+        function init() {
+            initSpeech();
+            loadFromLocalStorage();
+            updateDisplay();
+            
+            // 点击单词卡片朗读
+            document.getElementById('wordCard').addEventListener('click', speakWord);
+            
+            // 菜单按钮事件
+            document.getElementById('menuToggle').addEventListener('click', toggleMenu);
+            
+            // 点击其他地方关闭菜单
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.menu') && !e.target.closest('.menu-toggle')) {
+                    document.getElementById('menu').style.display = 'none';
+                }
+            });
+            
+            // 点击模态框外部关闭模态框
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+            
+            // 输入框回车键支持
+            document.getElementById('englishInput')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('chineseInput').focus();
+                }
+            });
+            
+            document.getElementById('chineseInput')?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addWord();
+                }
+            });
+            
+            // 注册Service Worker（PWA）
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('sw.js').then(
+                        registration => {
+                            console.log('ServiceWorker 注册成功:', registration.scope);
+                        },
+                        err => {
+                            console.log('ServiceWorker 注册失败:', err);
+                        }
+                    );
+                });
+            }
+            
+            // 添加到主屏幕引导
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                
+                // 可以在这里显示"添加到主屏幕"的提示
+                setTimeout(() => {
+                    if (confirm('想把这个应用添加到主屏幕吗？')) {
+                        deferredPrompt.prompt();
+                        deferredPrompt.userChoice.then((choiceResult) => {
+                            if (choiceResult.outcome === 'accepted') {
+                                console.log('用户同意添加到主屏幕');
+                            }
+                            deferredPrompt = null;
+                        });
+                    }
+                }, 3000);
+            });
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
