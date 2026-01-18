@@ -78,7 +78,7 @@
             background: #fff8f0;
             border-radius: 16px;
             box-shadow: 0 15px 30px rgba(0,0,0,0.25);
-            padding: 20px;
+            padding: 15px;
             perspective: 1000px;
             touch-action: pan-y;
             border: 6px solid #6d4c41;
@@ -102,14 +102,24 @@
             border-radius: 10px;
         }
         
-        /* 单词容器 */
-        .words-container {
+        /* 分栏容器 */
+        .columns-container {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            display: flex;
+            gap: 10px;
             transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
         }
         
         .page {
@@ -130,34 +140,38 @@
             pointer-events: all;
         }
         
-        /* 单词项 - 直接显示在纸上 */
+        /* 单词项 - 垂直列表式 */
         .word-item {
-            position: absolute;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+            align-items: flex-start;
+            text-align: left;
             border: none;
             background: none;
-            transform-origin: center;
             user-select: none;
             white-space: nowrap;
-            overflow: visible;
-            padding: 10px 14px;
-            min-width: 70px;
-            min-height: 50px;
-            pointer-events: auto;
+            overflow: hidden;
+            padding: 8px 10px;
+            border-radius: 6px;
+            position: relative;
+            min-height: 45px;
+            width: 100%;
+        }
+        
+        .word-item:hover {
+            background: rgba(255, 255, 255, 0.5);
         }
         
         .word-item:active {
-            transform: scale(0.95) !important;
+            background: rgba(123, 31, 162, 0.1);
+            transform: scale(0.98);
         }
         
         .word-item.showing-chinese {
-            z-index: 100;
+            background: rgba(123, 31, 162, 0.1);
+            border-left: 3px solid #7b1fa2;
         }
         
         .word-item.showing-chinese .word-english {
@@ -167,37 +181,33 @@
         
         /* 单词文本样式 */
         .word-english {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 3px;
             font-family: 'Georgia', 'Times New Roman', serif;
-            letter-spacing: -0.3px;
+            letter-spacing: -0.2px;
             white-space: nowrap;
-            overflow: visible;
-            text-overflow: clip;
+            overflow: hidden;
+            text-overflow: ellipsis;
             line-height: 1.2;
             transition: all 0.3s ease;
-            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+            max-width: 100%;
         }
         
         .word-chinese {
-            font-size: 15px;
+            font-size: 14px;
             color: #7b1fa2;
             font-weight: 500;
             opacity: 0;
-            transform: translateY(5px);
+            transform: translateY(3px);
             transition: all 0.3s ease;
             font-family: 'STKaiti', 'KaiTi', serif;
             white-space: nowrap;
-            overflow: visible;
-            text-overflow: clip;
+            overflow: hidden;
+            text-overflow: ellipsis;
             line-height: 1.2;
-            padding: 4px 8px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 6px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-            border: 1px solid rgba(123, 31, 162, 0.2);
+            max-width: 100%;
         }
         
         .word-item.showing-chinese .word-chinese {
@@ -503,8 +513,9 @@
         /* 语音动画 */
         .speaking-dot {
             position: absolute;
-            bottom: -5px;
-            right: -5px;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
             width: 8px;
             height: 8px;
             background: #4CAF50;
@@ -519,21 +530,34 @@
         }
         
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.5); }
-            100% { transform: scale(1); }
+            0% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.5); }
+            100% { transform: translateY(-50%) scale(1); }
         }
         
-        /* 响应式调整 */
-        @media (max-width: 768px) {
+        /* 响应式调整 - iPhone 14特别优化 */
+        @media (max-width: 430px) {
             body {
                 padding: 8px;
             }
             
             .paper-container {
-                padding: 16px;
+                padding: 12px;
                 border-width: 5px;
                 min-height: 75vh;
+            }
+            
+            .columns-container {
+                top: 12px;
+                left: 12px;
+                right: 12px;
+                bottom: 12px;
+                gap: 8px;
+            }
+            
+            .column {
+                padding: 8px;
+                gap: 8px;
             }
             
             .control-bar {
@@ -546,46 +570,9 @@
                 font-size: 13px;
             }
             
-            .word-english {
-                font-size: 16px;
-            }
-            
-            .word-chinese {
-                font-size: 14px;
-            }
-            
-            .words-container {
-                top: 16px;
-                left: 16px;
-                right: 16px;
-                bottom: 16px;
-            }
-            
             .word-item {
-                padding: 8px 12px;
-                min-width: 60px;
-                min-height: 45px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .paper-container {
-                padding: 12px;
-                border-width: 4px;
-                min-height: 80vh;
-            }
-            
-            .app-title {
-                font-size: 16px;
-            }
-            
-            .control-bar {
-                flex-wrap: wrap;
-            }
-            
-            .control-btn {
-                min-width: calc(50% - 4px);
-                padding: 8px 10px;
+                padding: 7px 9px;
+                min-height: 42px;
             }
             
             .word-english {
@@ -595,18 +582,17 @@
             .word-chinese {
                 font-size: 13px;
             }
-            
-            .words-container {
-                top: 12px;
-                left: 12px;
-                right: 12px;
-                bottom: 12px;
+        }
+        
+        /* iPhone 14 Pro Max */
+        @media (max-width: 430px) and (min-height: 900px) {
+            .paper-container {
+                min-height: 72vh;
             }
             
             .word-item {
-                padding: 6px 10px;
-                min-width: 55px;
-                min-height: 40px;
+                min-height: 45px;
+                padding: 8px 10px;
             }
         }
         
@@ -614,6 +600,14 @@
         @media (orientation: landscape) {
             .paper-container {
                 min-height: 80vh;
+            }
+            
+            .columns-container {
+                gap: 15px;
+            }
+            
+            .column {
+                gap: 12px;
             }
             
             .word-english {
@@ -625,38 +619,24 @@
             }
         }
         
-        /* iPhone 14特别优化 */
-        @media only screen and (device-width: 390px) and (device-height: 844px) {
-            .paper-container {
-                padding: 15px;
-                min-height: 75vh;
+        /* 屏幕很小时使用2列 */
+        @media (max-width: 360px) {
+            .columns-container {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .column {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: space-between;
             }
             
             .word-item {
-                padding: 7px 11px;
-                min-width: 65px;
-                min-height: 45px;
-            }
-            
-            .word-english {
-                font-size: 16px;
-            }
-        }
-        
-        @media only screen and (device-width: 428px) and (device-height: 926px) {
-            .paper-container {
-                padding: 18px;
-                min-height: 74vh;
-            }
-            
-            .word-item {
-                padding: 8px 12px;
-                min-width: 70px;
-                min-height: 48px;
-            }
-            
-            .word-english {
-                font-size: 17px;
+                width: calc(50% - 4px);
+                min-height: 40px;
+                padding: 6px 8px;
             }
         }
     </style>
@@ -903,148 +883,26 @@
             return words.slice(startIndex, endIndex);
         }
         
-        // 更严格的防重叠布局算法
-        function generateNonOverlapPositions(wordList) {
-            const positions = [];
-            const container = document.getElementById('paperContainer');
-            const containerWidth = container.offsetWidth - 40;
-            const containerHeight = container.offsetHeight - 40;
+        // 分栏布局算法 - 绝对不重叠
+        function generateColumnLayout(wordList) {
+            const pageWords = [...wordList]; // 复制数组
             
-            // 创建用于检测重叠的边界框数组
-            const placedBoxes = [];
-            
-            // 为每个单词尝试放置
-            for (let i = 0; i < wordList.length; i++) {
-                const word = wordList[i];
-                
-                // 根据单词长度估算需要的空间
-                const wordLength = word.english.length;
-                const fontSize = Math.max(14, 18 - Math.floor(wordLength / 4));
-                
-                // 估算单词宽度（包含内边距）
-                const estimatedWidth = wordLength * fontSize * 0.7 + 40; // 加上padding
-                const estimatedHeight = fontSize * 2.5 + 30; // 英文+中文+padding
-                
-                let placed = false;
-                let attempts = 0;
-                const maxAttempts = 500; // 增加尝试次数
-                
-                while (!placed && attempts < maxAttempts) {
-                    // 随机位置
-                    const x = 20 + Math.random() * (containerWidth - estimatedWidth);
-                    const y = 20 + Math.random() * (containerHeight - estimatedHeight);
-                    
-                    // 当前单词的边界框
-                    const currentBox = {
-                        x: x,
-                        y: y,
-                        width: estimatedWidth,
-                        height: estimatedHeight
-                    };
-                    
-                    // 检查是否与已放置的单词重叠
-                    let overlap = false;
-                    for (let j = 0; j < placedBoxes.length; j++) {
-                        const otherBox = placedBoxes[j];
-                        
-                        // 矩形碰撞检测
-                        const horizontalOverlap = 
-                            currentBox.x < otherBox.x + otherBox.width &&
-                            currentBox.x + currentBox.width > otherBox.x;
-                            
-                        const verticalOverlap = 
-                            currentBox.y < otherBox.y + otherBox.height &&
-                            currentBox.y + currentBox.height > otherBox.y;
-                        
-                        // 增加安全间距
-                        const safetyMargin = 10;
-                        const horizontalOverlapWithMargin = 
-                            currentBox.x < otherBox.x + otherBox.width + safetyMargin &&
-                            currentBox.x + currentBox.width + safetyMargin > otherBox.x;
-                            
-                        const verticalOverlapWithMargin = 
-                            currentBox.y < otherBox.y + otherBox.height + safetyMargin &&
-                            currentBox.y + currentBox.height + safetyMargin > otherBox.y;
-                        
-                        if (horizontalOverlapWithMargin && verticalOverlapWithMargin) {
-                            overlap = true;
-                            break;
-                        }
-                    }
-                    
-                    if (!overlap) {
-                        // 成功放置
-                        placedBoxes.push(currentBox);
-                        positions.push({
-                            x: x + estimatedWidth / 2, // 中心点X
-                            y: y + estimatedHeight / 2, // 中心点Y
-                            fontSize: fontSize,
-                            width: estimatedWidth,
-                            height: estimatedHeight
-                        });
-                        placed = true;
-                    }
-                    
-                    attempts++;
-                }
-                
-                // 如果多次尝试仍然无法放置，使用强制放置（最远距离法）
-                if (!placed) {
-                    let bestX = 20;
-                    let bestY = 20;
-                    let maxMinDistance = 0;
-                    
-                    // 在网格点上尝试
-                    const gridSize = 20;
-                    for (let gridY = 20; gridY < containerHeight - estimatedHeight; gridY += gridSize) {
-                        for (let gridX = 20; gridX < containerWidth - estimatedWidth; gridX += gridSize) {
-                            // 计算到所有已放置单词的最小距离
-                            let minDistance = Infinity;
-                            for (let j = 0; j < placedBoxes.length; j++) {
-                                const otherBox = placedBoxes[j];
-                                const centerX1 = gridX + estimatedWidth / 2;
-                                const centerY1 = gridY + estimatedHeight / 2;
-                                const centerX2 = otherBox.x + otherBox.width / 2;
-                                const centerY2 = otherBox.y + otherBox.height / 2;
-                                
-                                const distance = Math.sqrt(
-                                    Math.pow(centerX1 - centerX2, 2) + 
-                                    Math.pow(centerY1 - centerY2, 2)
-                                );
-                                
-                                if (distance < minDistance) {
-                                    minDistance = distance;
-                                }
-                            }
-                            
-                            // 选择距离最远的位置
-                            if (minDistance > maxMinDistance) {
-                                maxMinDistance = minDistance;
-                                bestX = gridX;
-                                bestY = gridY;
-                            }
-                        }
-                    }
-                    
-                    const currentBox = {
-                        x: bestX,
-                        y: bestY,
-                        width: estimatedWidth,
-                        height: estimatedHeight
-                    };
-                    
-                    placedBoxes.push(currentBox);
-                    positions.push({
-                        x: bestX + estimatedWidth / 2,
-                        y: bestY + estimatedHeight / 2,
-                        fontSize: fontSize,
-                        width: estimatedWidth,
-                        height: estimatedHeight
-                    });
-                }
+            // 随机打乱单词顺序
+            for (let i = pageWords.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pageWords[i], pageWords[j]] = [pageWords[j], pageWords[i]];
             }
             
-            return positions;
+            // 将单词分配到3列中
+            const columns = [[], [], []];
+            
+            pageWords.forEach((word, index) => {
+                // 简单轮询分配到各列
+                const columnIndex = index % 3;
+                columns[columnIndex].push(word);
+            });
+            
+            return columns;
         }
         
         // 渲染当前页面
@@ -1076,74 +934,73 @@
             const pageDiv = document.createElement('div');
             pageDiv.className = 'page active';
             
+            // 创建分栏容器
+            const columnsContainer = document.createElement('div');
+            columnsContainer.className = 'columns-container';
+            
             if (pageWords.length > 0) {
-                // 使用防重叠算法生成位置
-                const positions = generateNonOverlapPositions(pageWords);
+                // 生成分栏布局
+                const columns = generateColumnLayout(pageWords);
                 
-                // 创建单词项
-                pageWords.forEach((word, index) => {
-                    const pos = positions[index];
+                // 创建3列
+                for (let colIndex = 0; colIndex < 3; colIndex++) {
+                    const columnDiv = document.createElement('div');
+                    columnDiv.className = 'column';
                     
-                    const wordItem = document.createElement('div');
-                    wordItem.className = 'word-item';
-                    
-                    // 设置位置（中心定位）
-                    wordItem.style.left = `${pos.x}px`;
-                    wordItem.style.top = `${pos.y}px`;
-                    wordItem.style.transform = 'translate(-50%, -50%)';
-                    
-                    // 设置最小尺寸（基于估算）
-                    wordItem.style.minWidth = `${pos.width}px`;
-                    wordItem.style.minHeight = `${pos.height}px`;
-                    
-                    // 添加英文
-                    const englishDiv = document.createElement('div');
-                    englishDiv.className = 'word-english';
-                    englishDiv.textContent = word.english;
-                    englishDiv.style.fontSize = `${pos.fontSize}px`;
-                    
-                    // 添加中文
-                    const chineseDiv = document.createElement('div');
-                    chineseDiv.className = 'word-chinese';
-                    chineseDiv.textContent = word.chinese;
-                    chineseDiv.style.fontSize = `${pos.fontSize * 0.85}px`;
-                    
-                    // 添加语音指示点
-                    const speakingDot = document.createElement('div');
-                    speakingDot.className = 'speaking-dot';
-                    
-                    wordItem.appendChild(englishDiv);
-                    wordItem.appendChild(chineseDiv);
-                    wordItem.appendChild(speakingDot);
-                    
-                    // 点击事件
-                    wordItem.addEventListener('click', function(e) {
-                        e.stopPropagation();
+                    // 为该列的每个单词创建单词项
+                    columns[colIndex].forEach(word => {
+                        const wordItem = document.createElement('div');
+                        wordItem.className = 'word-item';
                         
-                        // 朗读单词
-                        speakWord(word.english, this);
+                        // 添加英文
+                        const englishDiv = document.createElement('div');
+                        englishDiv.className = 'word-english';
+                        englishDiv.textContent = word.english;
                         
-                        // 显示中文
-                        this.classList.add('showing-chinese');
+                        // 添加中文
+                        const chineseDiv = document.createElement('div');
+                        chineseDiv.className = 'word-chinese';
+                        chineseDiv.textContent = word.chinese;
                         
-                        // 5秒后自动隐藏中文
-                        setTimeout(() => {
-                            this.classList.remove('showing-chinese');
-                        }, 5000);
+                        // 添加语音指示点
+                        const speakingDot = document.createElement('div');
+                        speakingDot.className = 'speaking-dot';
                         
-                        // 点击动画
-                        const currentTransform = this.style.transform;
-                        this.style.transform = currentTransform + ' scale(1.1)';
+                        wordItem.appendChild(englishDiv);
+                        wordItem.appendChild(chineseDiv);
+                        wordItem.appendChild(speakingDot);
                         
-                        setTimeout(() => {
-                            this.style.transform = currentTransform;
-                        }, 300);
+                        // 点击事件
+                        wordItem.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            
+                            // 朗读单词
+                            speakWord(word.english, this);
+                            
+                            // 显示中文
+                            this.classList.add('showing-chinese');
+                            
+                            // 3秒后自动隐藏中文
+                            setTimeout(() => {
+                                this.classList.remove('showing-chinese');
+                            }, 3000);
+                            
+                            // 点击动画
+                            this.style.transform = 'scale(0.98)';
+                            
+                            setTimeout(() => {
+                                this.style.transform = 'scale(1)';
+                            }, 200);
+                        });
+                        
+                        columnDiv.appendChild(wordItem);
                     });
                     
-                    pageDiv.appendChild(wordItem);
-                });
+                    columnsContainer.appendChild(columnDiv);
+                }
             }
             
+            pageDiv.appendChild(columnsContainer);
             container.appendChild(pageDiv);
             updatePageInfo();
         }
@@ -1163,6 +1020,19 @@
             // 重新渲染页面
             renderCurrentPage();
             showToast('当前页单词已重新排列');
+            
+            // 添加一些动画效果
+            const wordItems = document.querySelectorAll('.word-item');
+            wordItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(10px)';
+                
+                setTimeout(() => {
+                    item.style.transition = 'all 0.4s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
         }
         
         // 下一页
@@ -1388,7 +1258,7 @@
                 '4. 添加单词：右上角菜单 → 添加单词\n' +
                 '5. 导入词库：支持JSON格式文件\n' +
                 '6. 导出词库：备份当前词库\n\n' +
-                '🔊 点击单词：自动朗读英文，显示中文5秒\n\n' +
+                '🔊 点击单词：自动朗读英文，显示中文3秒\n\n' +
                 '📱 添加到主屏幕：\n' +
                 '用Safari打开 → 分享 → 添加到主屏幕';
             
