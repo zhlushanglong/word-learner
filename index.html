@@ -151,7 +151,7 @@
             border: none;
             background: none;
             user-select: none;
-            white-space: nowrap;
+            white-space: normal;
             overflow: hidden;
             padding: 8px 10px;
             border-radius: 6px;
@@ -172,6 +172,7 @@
         .word-item.showing-chinese {
             background: rgba(123, 31, 162, 0.1);
             border-left: 3px solid #7b1fa2;
+            min-height: 70px; /* 增加高度以容纳tip */
         }
         
         .word-item.showing-chinese .word-english {
@@ -187,9 +188,6 @@
             margin-bottom: 3px;
             font-family: 'Georgia', 'Times New Roman', serif;
             letter-spacing: -0.2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             line-height: 1.2;
             transition: all 0.3s ease;
             max-width: 100%;
@@ -203,14 +201,28 @@
             transform: translateY(3px);
             transition: all 0.3s ease;
             font-family: 'STKaiti', 'KaiTi', serif;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             line-height: 1.2;
             max-width: 100%;
+            margin-bottom: 2px;
         }
         
-        .word-item.showing-chinese .word-chinese {
+        .word-tip {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+            opacity: 0;
+            transform: translateY(3px);
+            transition: all 0.3s ease;
+            line-height: 1.3;
+            max-width: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 2px 4px;
+            border-radius: 3px;
+            border-left: 2px solid #ff9800;
+        }
+        
+        .word-item.showing-chinese .word-chinese,
+        .word-item.showing-chinese .word-tip {
             opacity: 1;
             transform: translateY(0);
         }
@@ -514,8 +526,7 @@
         .speaking-dot {
             position: absolute;
             right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 5px;
             width: 8px;
             height: 8px;
             background: #4CAF50;
@@ -530,9 +541,9 @@
         }
         
         @keyframes pulse {
-            0% { transform: translateY(-50%) scale(1); }
-            50% { transform: translateY(-50%) scale(1.5); }
-            100% { transform: translateY(-50%) scale(1); }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
         }
         
         /* 响应式调整 - iPhone 14特别优化 */
@@ -575,12 +586,20 @@
                 min-height: 42px;
             }
             
+            .word-item.showing-chinese {
+                min-height: 65px;
+            }
+            
             .word-english {
                 font-size: 15px;
             }
             
             .word-chinese {
                 font-size: 13px;
+            }
+            
+            .word-tip {
+                font-size: 11px;
             }
         }
         
@@ -593,6 +612,10 @@
             .word-item {
                 min-height: 45px;
                 padding: 8px 10px;
+            }
+            
+            .word-item.showing-chinese {
+                min-height: 70px;
             }
         }
         
@@ -617,6 +640,10 @@
             .word-chinese {
                 font-size: 14px;
             }
+            
+            .word-tip {
+                font-size: 12px;
+            }
         }
         
         /* 屏幕很小时使用2列 */
@@ -637,6 +664,10 @@
                 width: calc(50% - 4px);
                 min-height: 40px;
                 padding: 6px 8px;
+            }
+            
+            .word-item.showing-chinese {
+                min-height: 60px;
             }
         }
     </style>
@@ -714,6 +745,10 @@
                 <label for="chineseInput">中文释义</label>
                 <input type="text" id="chineseInput" placeholder="例如：你好" autocomplete="off">
             </div>
+            <div class="input-group">
+                <label for="tipInput">记忆窍门（可选）</label>
+                <input type="text" id="tipInput" placeholder="例如：常考搭配、记忆方法" autocomplete="off">
+            </div>
             <div class="modal-buttons">
                 <button class="modal-btn modal-btn-cancel" onclick="hideAddWordModal()">取消</button>
                 <button class="modal-btn modal-btn-confirm" onclick="addWord()">添加</button>
@@ -728,7 +763,7 @@
             <div style="margin-bottom: 20px; color: #666; line-height: 1.6;">
                 请输入JSON格式的词库：<br>
                 <span style="font-size: 12px; color: #999;">
-                    示例：[{"english":"hello","chinese":"你好"}]
+                    示例：[{"english":"hello","chinese":"你好","tip":"常用问候语"}]
                 </span>
             </div>
             <div class="input-group">
@@ -760,48 +795,108 @@
     <div class="toast" id="toast"></div>
     
     <script>
-        // 词库数据
+        // 词库数据 - 现在包含tip字段
         let words = [
-            { english: 'apple', chinese: '苹果' },
-            { english: 'banana', chinese: '香蕉' },
-            { english: 'computer', chinese: '电脑' },
-            { english: 'programming', chinese: '编程' },
-            { english: 'development', chinese: '开发' },
-            { english: 'hello', chinese: '你好' },
-            { english: 'world', chinese: '世界' },
-            { english: 'software', chinese: '软件' },
-            { english: 'hardware', chinese: '硬件' },
-            { english: 'network', chinese: '网络' },
-            { english: 'database', chinese: '数据库' },
-            { english: 'algorithm', chinese: '算法' },
-            { english: 'variable', chinese: '变量' },
-            { english: 'function', chinese: '函数' },
-            { english: 'class', chinese: '类' },
-            { english: 'object', chinese: '对象' },
-            { english: 'interface', chinese: '接口' },
-            { english: 'method', chinese: '方法' },
-            { english: 'property', chinese: '属性' },
-            { english: 'event', chinese: '事件' },
-            { english: 'callback', chinese: '回调' },
-            { english: 'promise', chinese: '承诺' },
-            { english: 'async', chinese: '异步' },
-            { english: 'await', chinese: '等待' },
-            { english: 'framework', chinese: '框架' },
-            { english: 'library', chinese: '库' },
-            { english: 'module', chinese: '模块' },
-            { english: 'package', chinese: '包' },
-            { english: 'dependency', chinese: '依赖' },
-            { english: 'configuration', chinese: '配置' },
-            { english: 'environment', chinese: '环境' },
-            { english: 'deployment', chinese: '部署' },
-            { english: 'maintenance', chinese: '维护' },
-            { english: 'optimization', chinese: '优化' },
-            { english: 'performance', chinese: '性能' },
-            { english: 'security', chinese: '安全' },
-            { english: 'authentication', chinese: '认证' },
-            { english: 'authorization', chinese: '授权' },
-            { english: 'encryption', chinese: '加密' },
-            { english: 'decryption', chinese: '解密' }
+            {
+                "english": "Accept",
+                "chinese": "接受",
+                "tip": "Accept an invitation (接受邀请)"
+            },
+            {
+                "english": "Achieve",
+                "chinese": "达到/实现",
+                "tip": "Achieve a goal (实现目标)"
+            },
+            {
+                "english": "Affect",
+                "chinese": "影响",
+                "tip": "动词，常考 A 影响 B"
+            },
+            {
+                "english": "Allow",
+                "chinese": "允许",
+                "tip": "Allow sb. to do sth. (允许某人做某事)"
+            },
+            {
+                "english": "Believe",
+                "chinese": "相信",
+                "tip": "Believe in oneself (相信自己)"
+            },
+            {
+                "english": "Cause",
+                "chinese": "导致/引起",
+                "tip": "既是动词也是名词（原因）"
+            },
+            {
+                "english": "Change",
+                "chinese": "改变",
+                "tip": "Change one's mind (改变主意)"
+            },
+            {
+                "english": "Consider",
+                "chinese": "考虑/认为",
+                "tip": "Consider doing sth."
+            },
+            {
+                "english": "Create",
+                "chinese": "创造",
+                "tip": "Create a new record (创造新纪录)"
+            },
+            {
+                "english": "Decide",
+                "chinese": "决定",
+                "tip": "Decide to do sth."
+            },
+            {
+                "english": "Develop",
+                "chinese": "发展/开发",
+                "tip": "Developed countries (发达国家)"
+            },
+            {
+                "english": "Expect",
+                "chinese": "期待/预料",
+                "tip": "Expect sb. to do sth."
+            },
+            {
+                "english": "Improve",
+                "chinese": "提高/改善",
+                "tip": "Improve English (提高英语)"
+            },
+            {
+                "english": "Include",
+                "chinese": "包括",
+                "tip": "经常在阅读题的选项中出现"
+            },
+            {
+                "english": "Increase",
+                "chinese": "增加",
+                "tip": "反义词是 Decrease (减少)"
+            },
+            {
+                "english": "Maintain",
+                "chinese": "维持/保持",
+                "tip": "Maintain health (保持健康)"
+            },
+            {
+                "english": "Provide",
+                "chinese": "提供",
+                "tip": "Provide sth. for sb."
+            },
+            {
+                "english": "Receive",
+                "chinese": "收到",
+                "tip": "收到信件、礼物等"
+            },
+            {
+                "english": "Require",
+                "chinese": "要求",
+                "tip": "Requirement (名词：要求)"
+            },
+            {
+                "english": "Suggest",
+                "chinese": "建议",
+                "tip": "后接 that 从句用 should + 动词原形"
+            }
         ];
         
         const WORDS_PER_PAGE = 20;
@@ -883,9 +978,9 @@
             return words.slice(startIndex, endIndex);
         }
         
-        // 分栏布局算法 - 绝对不重叠
+        // 分栏布局算法
         function generateColumnLayout(wordList) {
-            const pageWords = [...wordList]; // 复制数组
+            const pageWords = [...wordList];
             
             // 随机打乱单词顺序
             for (let i = pageWords.length - 1; i > 0; i--) {
@@ -897,7 +992,6 @@
             const columns = [[], [], []];
             
             pageWords.forEach((word, index) => {
-                // 简单轮询分配到各列
                 const columnIndex = index % 3;
                 columns[columnIndex].push(word);
             });
@@ -962,12 +1056,23 @@
                         chineseDiv.className = 'word-chinese';
                         chineseDiv.textContent = word.chinese;
                         
+                        // 添加记忆窍门（如果有）
+                        let tipDiv = null;
+                        if (word.tip && word.tip.trim() !== '') {
+                            tipDiv = document.createElement('div');
+                            tipDiv.className = 'word-tip';
+                            tipDiv.textContent = word.tip;
+                        }
+                        
                         // 添加语音指示点
                         const speakingDot = document.createElement('div');
                         speakingDot.className = 'speaking-dot';
                         
                         wordItem.appendChild(englishDiv);
                         wordItem.appendChild(chineseDiv);
+                        if (tipDiv) {
+                            wordItem.appendChild(tipDiv);
+                        }
                         wordItem.appendChild(speakingDot);
                         
                         // 点击事件
@@ -977,13 +1082,13 @@
                             // 朗读单词
                             speakWord(word.english, this);
                             
-                            // 显示中文
+                            // 显示中文和记忆窍门
                             this.classList.add('showing-chinese');
                             
-                            // 3秒后自动隐藏中文
+                            // 5秒后自动隐藏中文和记忆窍门
                             setTimeout(() => {
                                 this.classList.remove('showing-chinese');
-                            }, 3000);
+                            }, 5000);
                             
                             // 点击动画
                             this.style.transform = 'scale(0.98)';
@@ -1109,6 +1214,7 @@
         function showAddWordModal() {
             document.getElementById('englishInput').value = '';
             document.getElementById('chineseInput').value = '';
+            document.getElementById('tipInput').value = '';
             document.getElementById('addWordModal').style.display = 'flex';
             hideMenu();
         }
@@ -1144,10 +1250,11 @@
             document.getElementById('menu').style.display = 'none';
         }
         
-        // 添加单词
+        // 添加单词（现在包含tip字段）
         function addWord() {
             const english = document.getElementById('englishInput').value.trim();
             const chinese = document.getElementById('chineseInput').value.trim();
+            const tip = document.getElementById('tipInput').value.trim();
             
             if (!english) {
                 showToast('请输入英文单词');
@@ -1167,7 +1274,7 @@
                 return;
             }
             
-            words.push({ english, chinese });
+            words.push({ english, chinese, tip });
             
             const oldTotalPages = getTotalPages();
             const newTotalPages = Math.ceil(words.length / WORDS_PER_PAGE);
@@ -1181,7 +1288,7 @@
             showToast('单词添加成功！');
         }
         
-        // 导入词库
+        // 导入词库（现在支持tip字段）
         function importWords() {
             const json = document.getElementById('importInput').value.trim();
             
@@ -1198,10 +1305,15 @@
                     return;
                 }
                 
+                // 验证格式（现在tip是可选的）
                 for (let item of imported) {
                     if (!item.english || !item.chinese) {
                         showToast('每个单词必须包含english和chinese字段');
                         return;
+                    }
+                    // 确保tip字段存在（如果没有则设为空字符串）
+                    if (item.tip === undefined) {
+                        item.tip = '';
                     }
                 }
                 
@@ -1217,7 +1329,7 @@
             }
         }
         
-        // 导出词库
+        // 导出词库（现在包含tip字段）
         function exportWords() {
             if (words.length === 0) {
                 showToast('词库为空，无法导出');
@@ -1252,13 +1364,13 @@
         function showHelp() {
             const helpText = 
                 '📱 使用帮助：\n\n' +
-                '1. 点击单词：朗读发音并显示中文\n' +
+                '1. 点击单词：朗读发音并显示中文和记忆窍门\n' +
                 '2. 左右滑动纸张：切换页面（每页20词）\n' +
                 '3. 乱序排列：重新排列当前页单词位置\n' +
-                '4. 添加单词：右上角菜单 → 添加单词\n' +
-                '5. 导入词库：支持JSON格式文件\n' +
-                '6. 导出词库：备份当前词库\n\n' +
-                '🔊 点击单词：自动朗读英文，显示中文3秒\n\n' +
+                '4. 添加单词：右上角菜单 → 添加单词（可添加记忆窍门）\n' +
+                '5. 导入词库：支持JSON格式文件（含tip字段）\n' +
+                '6. 导出词库：备份当前词库（包含记忆窍门）\n\n' +
+                '🔊 点击单词：自动朗读英文，显示中文和记忆窍门5秒\n\n' +
                 '📱 添加到主屏幕：\n' +
                 '用Safari打开 → 分享 → 添加到主屏幕';
             
@@ -1337,6 +1449,12 @@
             });
             
             document.getElementById('chineseInput')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('tipInput').focus();
+                }
+            });
+            
+            document.getElementById('tipInput')?.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     addWord();
                 }
