@@ -140,22 +140,24 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            border: none; /* 取消边框 */
-            background: none; /* 取消背景 */
+            border: none;
+            background: none;
             transform-origin: center;
             user-select: none;
             white-space: nowrap;
             overflow: visible;
-            padding: 8px 12px; /* 增加点击区域 */
-            min-width: 60px;
+            padding: 10px 14px;
+            min-width: 70px;
+            min-height: 50px;
+            pointer-events: auto;
         }
         
         .word-item:active {
-            transform: scale(0.95);
+            transform: scale(0.95) !important;
         }
         
         .word-item.showing-chinese {
-            z-index: 2;
+            z-index: 100;
         }
         
         .word-item.showing-chinese .word-english {
@@ -165,10 +167,10 @@
         
         /* 单词文本样式 */
         .word-english {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
             font-family: 'Georgia', 'Times New Roman', serif;
             letter-spacing: -0.3px;
             white-space: nowrap;
@@ -180,7 +182,7 @@
         }
         
         .word-chinese {
-            font-size: 16px;
+            font-size: 15px;
             color: #7b1fa2;
             font-weight: 500;
             opacity: 0;
@@ -191,10 +193,11 @@
             overflow: visible;
             text-overflow: clip;
             line-height: 1.2;
-            padding: 2px 4px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            border: 1px solid rgba(123, 31, 162, 0.2);
         }
         
         .word-item.showing-chinese .word-chinese {
@@ -544,11 +547,11 @@
             }
             
             .word-english {
-                font-size: 17px;
+                font-size: 16px;
             }
             
             .word-chinese {
-                font-size: 15px;
+                font-size: 14px;
             }
             
             .words-container {
@@ -556,6 +559,12 @@
                 left: 16px;
                 right: 16px;
                 bottom: 16px;
+            }
+            
+            .word-item {
+                padding: 8px 12px;
+                min-width: 60px;
+                min-height: 45px;
             }
         }
         
@@ -580,11 +589,11 @@
             }
             
             .word-english {
-                font-size: 16px;
+                font-size: 15px;
             }
             
             .word-chinese {
-                font-size: 14px;
+                font-size: 13px;
             }
             
             .words-container {
@@ -596,7 +605,8 @@
             
             .word-item {
                 padding: 6px 10px;
-                min-width: 50px;
+                min-width: 55px;
+                min-height: 40px;
             }
         }
         
@@ -607,11 +617,46 @@
             }
             
             .word-english {
-                font-size: 17px;
+                font-size: 16px;
             }
             
             .word-chinese {
-                font-size: 15px;
+                font-size: 14px;
+            }
+        }
+        
+        /* iPhone 14特别优化 */
+        @media only screen and (device-width: 390px) and (device-height: 844px) {
+            .paper-container {
+                padding: 15px;
+                min-height: 75vh;
+            }
+            
+            .word-item {
+                padding: 7px 11px;
+                min-width: 65px;
+                min-height: 45px;
+            }
+            
+            .word-english {
+                font-size: 16px;
+            }
+        }
+        
+        @media only screen and (device-width: 428px) and (device-height: 926px) {
+            .paper-container {
+                padding: 18px;
+                min-height: 74vh;
+            }
+            
+            .word-item {
+                padding: 8px 12px;
+                min-width: 70px;
+                min-height: 48px;
+            }
+            
+            .word-english {
+                font-size: 17px;
             }
         }
     </style>
@@ -735,7 +780,7 @@
     <div class="toast" id="toast"></div>
     
     <script>
-        // 词库数据 - 初始示例单词
+        // 词库数据
         let words = [
             { english: 'apple', chinese: '苹果' },
             { english: 'banana', chinese: '香蕉' },
@@ -779,12 +824,12 @@
             { english: 'decryption', chinese: '解密' }
         ];
         
-        const WORDS_PER_PAGE = 20;  // 每页显示20个单词
-        let currentPage = 0;        // 当前页码（从0开始）
-        let speech = null;          // 语音合成器
-        let isSpeaking = false;     // 是否正在朗读
-        let touchStartX = 0;        // 触摸开始X坐标
-        let touchEndX = 0;          // 触摸结束X坐标
+        const WORDS_PER_PAGE = 20;
+        let currentPage = 0;
+        let speech = null;
+        let isSpeaking = false;
+        let touchStartX = 0;
+        let touchEndX = 0;
         
         // 显示提示信息
         function showToast(message, duration = 2000) {
@@ -811,7 +856,6 @@
             if (!speech) initSpeech();
             if (isSpeaking) return;
             
-            // 标记正在朗读的单词
             if (wordElement) {
                 wordElement.classList.add('speaking');
             }
@@ -859,114 +903,143 @@
             return words.slice(startIndex, endIndex);
         }
         
-        // 计算单词的像素宽度
-        function getWordWidth(word, fontSize) {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            context.font = `${fontSize}px Georgia`;
-            return Math.ceil(context.measureText(word).width);
-        }
-        
-        // 生成网格位置（确保不重叠）
-        function generateGridPositions(count) {
+        // 更严格的防重叠布局算法
+        function generateNonOverlapPositions(wordList) {
             const positions = [];
             const container = document.getElementById('paperContainer');
             const containerWidth = container.offsetWidth - 40;
             const containerHeight = container.offsetHeight - 40;
             
-            // 网格参数
-            const maxRows = 6;  // 最大6行
-            const maxCols = 4;  // 最大4列
-            const cellWidth = containerWidth / maxCols;
-            const cellHeight = containerHeight / maxRows;
+            // 创建用于检测重叠的边界框数组
+            const placedBoxes = [];
             
-            // 创建网格单元格
-            const gridCells = [];
-            for (let row = 0; row < maxRows; row++) {
-                for (let col = 0; col < maxCols; col++) {
-                    gridCells.push({
-                        row,
-                        col,
-                        centerX: col * cellWidth + cellWidth / 2,
-                        centerY: row * cellHeight + cellHeight / 2,
-                        used: false
-                    });
-                }
-            }
-            
-            // 随机打乱网格单元格顺序
-            for (let i = gridCells.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [gridCells[i], gridCells[j]] = [gridCells[j], gridCells[i]];
-            }
-            
-            // 为每个单词分配一个网格单元格
-            for (let i = 0; i < Math.min(count, gridCells.length); i++) {
-                const cell = gridCells[i];
-                cell.used = true;
+            // 为每个单词尝试放置
+            for (let i = 0; i < wordList.length; i++) {
+                const word = wordList[i];
                 
-                // 在单元格内随机偏移，但保持不重叠
-                const maxOffsetX = cellWidth * 0.2;
-                const maxOffsetY = cellHeight * 0.2;
+                // 根据单词长度估算需要的空间
+                const wordLength = word.english.length;
+                const fontSize = Math.max(14, 18 - Math.floor(wordLength / 4));
                 
-                const x = cell.centerX + (Math.random() * maxOffsetX * 2 - maxOffsetX);
-                const y = cell.centerY + (Math.random() * maxOffsetY * 2 - maxOffsetY);
+                // 估算单词宽度（包含内边距）
+                const estimatedWidth = wordLength * fontSize * 0.7 + 40; // 加上padding
+                const estimatedHeight = fontSize * 2.5 + 30; // 英文+中文+padding
                 
-                // 确保在边界内
-                const safeX = Math.max(20, Math.min(containerWidth - 60, x));
-                const safeY = Math.max(20, Math.min(containerHeight - 40, y));
+                let placed = false;
+                let attempts = 0;
+                const maxAttempts = 500; // 增加尝试次数
                 
-                // 随机字体大小
-                const fontSize = 16 + Math.random() * 4;
-                
-                positions.push({
-                    x: safeX,
-                    y: safeY,
-                    fontSize: fontSize
-                });
-            }
-            
-            // 如果网格单元格不够，添加一些随机位置
-            if (count > gridCells.length) {
-                for (let i = gridCells.length; i < count; i++) {
-                    let attempts = 0;
-                    let validPosition = false;
-                    let x, y;
+                while (!placed && attempts < maxAttempts) {
+                    // 随机位置
+                    const x = 20 + Math.random() * (containerWidth - estimatedWidth);
+                    const y = 20 + Math.random() * (containerHeight - estimatedHeight);
                     
-                    while (!validPosition && attempts < 100) {
-                        x = 20 + Math.random() * (containerWidth - 60);
-                        y = 20 + Math.random() * (containerHeight - 40);
-                        
-                        // 检查是否与其他位置太近
-                        validPosition = true;
-                        for (let j = 0; j < positions.length; j++) {
-                            const otherPos = positions[j];
-                            const distance = Math.sqrt(
-                                Math.pow(x - otherPos.x, 2) + 
-                                Math.pow(y - otherPos.y, 2)
-                            );
-                            
-                            // 如果距离小于100px，认为太近
-                            if (distance < 100) {
-                                validPosition = false;
-                                break;
-                            }
-                        }
-                        attempts++;
-                    }
-                    
-                    if (!validPosition) {
-                        // 如果找不到合适位置，使用随机位置
-                        x = 20 + Math.random() * (containerWidth - 60);
-                        y = 20 + Math.random() * (containerHeight - 40);
-                    }
-                    
-                    const fontSize = 16 + Math.random() * 4;
-                    
-                    positions.push({
+                    // 当前单词的边界框
+                    const currentBox = {
                         x: x,
                         y: y,
-                        fontSize: fontSize
+                        width: estimatedWidth,
+                        height: estimatedHeight
+                    };
+                    
+                    // 检查是否与已放置的单词重叠
+                    let overlap = false;
+                    for (let j = 0; j < placedBoxes.length; j++) {
+                        const otherBox = placedBoxes[j];
+                        
+                        // 矩形碰撞检测
+                        const horizontalOverlap = 
+                            currentBox.x < otherBox.x + otherBox.width &&
+                            currentBox.x + currentBox.width > otherBox.x;
+                            
+                        const verticalOverlap = 
+                            currentBox.y < otherBox.y + otherBox.height &&
+                            currentBox.y + currentBox.height > otherBox.y;
+                        
+                        // 增加安全间距
+                        const safetyMargin = 10;
+                        const horizontalOverlapWithMargin = 
+                            currentBox.x < otherBox.x + otherBox.width + safetyMargin &&
+                            currentBox.x + currentBox.width + safetyMargin > otherBox.x;
+                            
+                        const verticalOverlapWithMargin = 
+                            currentBox.y < otherBox.y + otherBox.height + safetyMargin &&
+                            currentBox.y + currentBox.height + safetyMargin > otherBox.y;
+                        
+                        if (horizontalOverlapWithMargin && verticalOverlapWithMargin) {
+                            overlap = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!overlap) {
+                        // 成功放置
+                        placedBoxes.push(currentBox);
+                        positions.push({
+                            x: x + estimatedWidth / 2, // 中心点X
+                            y: y + estimatedHeight / 2, // 中心点Y
+                            fontSize: fontSize,
+                            width: estimatedWidth,
+                            height: estimatedHeight
+                        });
+                        placed = true;
+                    }
+                    
+                    attempts++;
+                }
+                
+                // 如果多次尝试仍然无法放置，使用强制放置（最远距离法）
+                if (!placed) {
+                    let bestX = 20;
+                    let bestY = 20;
+                    let maxMinDistance = 0;
+                    
+                    // 在网格点上尝试
+                    const gridSize = 20;
+                    for (let gridY = 20; gridY < containerHeight - estimatedHeight; gridY += gridSize) {
+                        for (let gridX = 20; gridX < containerWidth - estimatedWidth; gridX += gridSize) {
+                            // 计算到所有已放置单词的最小距离
+                            let minDistance = Infinity;
+                            for (let j = 0; j < placedBoxes.length; j++) {
+                                const otherBox = placedBoxes[j];
+                                const centerX1 = gridX + estimatedWidth / 2;
+                                const centerY1 = gridY + estimatedHeight / 2;
+                                const centerX2 = otherBox.x + otherBox.width / 2;
+                                const centerY2 = otherBox.y + otherBox.height / 2;
+                                
+                                const distance = Math.sqrt(
+                                    Math.pow(centerX1 - centerX2, 2) + 
+                                    Math.pow(centerY1 - centerY2, 2)
+                                );
+                                
+                                if (distance < minDistance) {
+                                    minDistance = distance;
+                                }
+                            }
+                            
+                            // 选择距离最远的位置
+                            if (minDistance > maxMinDistance) {
+                                maxMinDistance = minDistance;
+                                bestX = gridX;
+                                bestY = gridY;
+                            }
+                        }
+                    }
+                    
+                    const currentBox = {
+                        x: bestX,
+                        y: bestY,
+                        width: estimatedWidth,
+                        height: estimatedHeight
+                    };
+                    
+                    placedBoxes.push(currentBox);
+                    positions.push({
+                        x: bestX + estimatedWidth / 2,
+                        y: bestY + estimatedHeight / 2,
+                        fontSize: fontSize,
+                        width: estimatedWidth,
+                        height: estimatedHeight
                     });
                 }
             }
@@ -1004,8 +1077,8 @@
             pageDiv.className = 'page active';
             
             if (pageWords.length > 0) {
-                // 生成不重叠的位置
-                const positions = generateGridPositions(pageWords.length);
+                // 使用防重叠算法生成位置
+                const positions = generateNonOverlapPositions(pageWords);
                 
                 // 创建单词项
                 pageWords.forEach((word, index) => {
@@ -1014,10 +1087,14 @@
                     const wordItem = document.createElement('div');
                     wordItem.className = 'word-item';
                     
-                    // 设置位置（使用transform实现中心定位）
+                    // 设置位置（中心定位）
                     wordItem.style.left = `${pos.x}px`;
                     wordItem.style.top = `${pos.y}px`;
                     wordItem.style.transform = 'translate(-50%, -50%)';
+                    
+                    // 设置最小尺寸（基于估算）
+                    wordItem.style.minWidth = `${pos.width}px`;
+                    wordItem.style.minHeight = `${pos.height}px`;
                     
                     // 添加英文
                     const englishDiv = document.createElement('div');
@@ -1029,7 +1106,7 @@
                     const chineseDiv = document.createElement('div');
                     chineseDiv.className = 'word-chinese';
                     chineseDiv.textContent = word.chinese;
-                    chineseDiv.style.fontSize = `${pos.fontSize * 0.9}px`;
+                    chineseDiv.style.fontSize = `${pos.fontSize * 0.85}px`;
                     
                     // 添加语音指示点
                     const speakingDot = document.createElement('div');
@@ -1055,10 +1132,11 @@
                         }, 5000);
                         
                         // 点击动画
-                        this.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                        const currentTransform = this.style.transform;
+                        this.style.transform = currentTransform + ' scale(1.1)';
                         
                         setTimeout(() => {
-                            this.style.transform = 'translate(-50%, -50%) scale(1)';
+                            this.style.transform = currentTransform;
                         }, 300);
                     });
                     
@@ -1110,15 +1188,12 @@
         function animatePageTransition(direction) {
             const container = document.getElementById('paperContainer');
             
-            // 创建临时遮罩层
             const overlay = document.createElement('div');
             overlay.className = 'page-transition';
             container.appendChild(overlay);
             
-            // 淡出
             overlay.style.opacity = '0.3';
             
-            // 淡入
             setTimeout(() => {
                 overlay.style.opacity = '0';
                 setTimeout(() => {
