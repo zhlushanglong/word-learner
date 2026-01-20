@@ -180,6 +180,24 @@
             font-weight: 700;
         }
         
+        /* 自动朗读时的样式 */
+        .word-item.auto-speaking {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.15), rgba(33, 150, 243, 0.25));
+            border-left: 3px solid #2196F3;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .word-item.auto-speaking .word-english {
+            color: #1976D2;
+            font-weight: 700;
+        }
+        
+        .word-item.auto-speaking .word-chinese {
+            color: #E91E63;
+            font-weight: 600;
+        }
+        
         /* 单词文本样式 */
         .word-english {
             font-size: 16px;
@@ -234,6 +252,7 @@
             gap: 10px;
             margin-top: 12px;
             padding: 0 5px;
+            flex-wrap: wrap;
         }
         
         .control-btn {
@@ -262,6 +281,60 @@
         .control-btn.shuffle-btn {
             background: linear-gradient(135deg, #ff9800, #f57c00);
             box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        .control-btn.auto-speak-btn {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .control-btn.auto-speak-btn.active {
+            background: linear-gradient(135deg, #f44336, #c62828);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3); }
+            50% { box-shadow: 0 5px 25px rgba(244, 67, 54, 0.6); }
+            100% { box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3); }
+        }
+        
+        /* 设置栏 */
+        .settings-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 13px;
+        }
+        
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .setting-item input[type="number"] {
+            width: 50px;
+            padding: 4px 6px;
+            border: none;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        .setting-item select {
+            padding: 4px 6px;
+            border: none;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
         }
         
         /* 页码指示器 */
@@ -546,6 +619,40 @@
             100% { transform: scale(1); }
         }
         
+        /* 自动朗读状态指示器 */
+        .auto-speak-status {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .auto-speak-status.active {
+            display: flex;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
         /* 响应式调整 - iPhone 14特别优化 */
         @media (max-width: 430px) {
             body {
@@ -555,7 +662,7 @@
             .paper-container {
                 padding: 12px;
                 border-width: 5px;
-                min-height: 75vh;
+                min-height: 65vh;
             }
             
             .columns-container {
@@ -581,6 +688,17 @@
                 font-size: 13px;
             }
             
+            .settings-bar {
+                flex-direction: column;
+                gap: 8px;
+                padding: 8px;
+            }
+            
+            .setting-item {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
             .word-item {
                 padding: 7px 9px;
                 min-height: 42px;
@@ -601,12 +719,18 @@
             .word-tip {
                 font-size: 11px;
             }
+            
+            .auto-speak-status {
+                top: 65px;
+                font-size: 11px;
+                padding: 6px 12px;
+            }
         }
         
         /* iPhone 14 Pro Max */
         @media (max-width: 430px) and (min-height: 900px) {
             .paper-container {
-                min-height: 72vh;
+                min-height: 68vh;
             }
             
             .word-item {
@@ -622,7 +746,7 @@
         /* 横屏模式 */
         @media (orientation: landscape) {
             .paper-container {
-                min-height: 80vh;
+                min-height: 75vh;
             }
             
             .columns-container {
@@ -643,6 +767,15 @@
             
             .word-tip {
                 font-size: 12px;
+            }
+            
+            .settings-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .setting-item {
+                flex: 0 0 auto;
             }
         }
         
@@ -669,6 +802,12 @@
             .word-item.showing-chinese {
                 min-height: 60px;
             }
+            
+            .control-btn {
+                padding: 8px 12px;
+                min-width: 90px;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -688,6 +827,36 @@
             <!-- 页面内容会动态生成 -->
         </div>
         
+        <!-- 自动朗读状态指示器 -->
+        <div class="auto-speak-status" id="autoSpeakStatus">
+            <span>🔊</span>
+            <span id="autoSpeakStatusText">自动朗读中...</span>
+            <span id="autoSpeakProgress">(0/0)</span>
+        </div>
+        
+        <!-- 设置栏 -->
+        <div class="settings-bar">
+            <div class="setting-item">
+                <label>间隔(秒):</label>
+                <input type="number" id="speakInterval" value="3" min="1" max="10">
+            </div>
+            <div class="setting-item">
+                <label>模式:</label>
+                <select id="speakMode">
+                    <option value="english-only">仅英文</option>
+                    <option value="both" selected>英文+中文</option>
+                    <option value="english-chinese-tip">英+中+窍门</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label>循环:</label>
+                <select id="loopMode">
+                    <option value="page" selected>本页循环</option>
+                    <option value="all">全部循环</option>
+                </select>
+            </div>
+        </div>
+        
         <!-- 控制栏 -->
         <div class="control-bar">
             <button class="control-btn" onclick="prevPage()">
@@ -695,6 +864,9 @@
             </button>
             <button class="control-btn shuffle-btn" onclick="shuffleCurrentPage()">
                 <span>🔀</span> 乱序排列
+            </button>
+            <button class="control-btn auto-speak-btn" id="autoSpeakBtn" onclick="toggleAutoSpeak()">
+                <span>🔊</span> 开始自动朗读
             </button>
             <button class="control-btn" onclick="nextPage()">
                 下一页 <span>▶</span>
@@ -795,7 +967,7 @@
     <div class="toast" id="toast"></div>
     
     <script>
-        // 词库数据 - 现在包含tip字段
+        // 词库数据
         let words = [
             {
                 "english": "Accept",
@@ -903,6 +1075,9 @@
         let currentPage = 0;
         let speech = null;
         let isSpeaking = false;
+        let isAutoSpeaking = false;
+        let autoSpeakIndex = 0;
+        let autoSpeakTimeout = null;
         let touchStartX = 0;
         let touchEndX = 0;
         
@@ -926,10 +1101,26 @@
             }
         }
         
-        // 朗读单词
-        function speakWord(word, wordElement) {
+        // 朗读文本
+        function speakText(text, lang = 'en-US', callback = null) {
             if (!speech) initSpeech();
-            if (isSpeaking) return;
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
+            
+            if (callback) {
+                utterance.onend = callback;
+            }
+            
+            speech.speak(utterance);
+        }
+        
+        // 朗读单词（现在支持中英文）
+        function speakWord(wordData, wordElement, lang = 'en-US') {
+            if (!speech) initSpeech();
+            if (isSpeaking && !isAutoSpeaking) return;
             
             if (wordElement) {
                 wordElement.classList.add('speaking');
@@ -937,8 +1128,8 @@
             
             isSpeaking = true;
             
-            const utterance = new SpeechSynthesisUtterance(word);
-            utterance.lang = 'en-US';
+            const utterance = new SpeechSynthesisUtterance(wordData.english);
+            utterance.lang = lang;
             utterance.rate = 0.8;
             utterance.pitch = 1.0;
             
@@ -960,7 +1151,9 @@
                 if (wordElement) {
                     wordElement.classList.remove('speaking');
                 }
-                showToast('朗读失败，请重试');
+                if (!isAutoSpeaking) {
+                    showToast('朗读失败，请重试');
+                }
             };
             
             speech.speak(utterance);
@@ -1045,6 +1238,9 @@
                     columns[colIndex].forEach(word => {
                         const wordItem = document.createElement('div');
                         wordItem.className = 'word-item';
+                        wordItem.dataset.english = word.english;
+                        wordItem.dataset.chinese = word.chinese;
+                        wordItem.dataset.tip = word.tip || '';
                         
                         // 添加英文
                         const englishDiv = document.createElement('div');
@@ -1079,8 +1275,14 @@
                         wordItem.addEventListener('click', function(e) {
                             e.stopPropagation();
                             
+                            // 如果正在自动朗读，则停止自动朗读
+                            if (isAutoSpeaking) {
+                                stopAutoSpeak();
+                                return;
+                            }
+                            
                             // 朗读单词
-                            speakWord(word.english, this);
+                            speakWord(word, this);
                             
                             // 显示中文和记忆窍门
                             this.classList.add('showing-chinese');
@@ -1117,8 +1319,210 @@
                 `第${currentPage + 1}页 / 共${totalPages}页`;
         }
         
+        // 自动朗读功能
+        function toggleAutoSpeak() {
+            if (isAutoSpeaking) {
+                stopAutoSpeak();
+            } else {
+                startAutoSpeak();
+            }
+        }
+        
+        function startAutoSpeak() {
+            if (words.length === 0) {
+                showToast('词库为空，无法开始自动朗读');
+                return;
+            }
+            
+            isAutoSpeaking = true;
+            autoSpeakIndex = 0;
+            
+            // 更新按钮状态
+            const btn = document.getElementById('autoSpeakBtn');
+            btn.innerHTML = '<span>⏸️</span> 停止自动朗读';
+            btn.classList.add('active');
+            
+            // 显示状态指示器
+            const status = document.getElementById('autoSpeakStatus');
+            const statusText = document.getElementById('autoSpeakStatusText');
+            const progress = document.getElementById('autoSpeakProgress');
+            
+            status.classList.add('active');
+            
+            // 开始朗读
+            speakNextWordInAutoMode();
+        }
+        
+        function stopAutoSpeak() {
+            isAutoSpeaking = false;
+            
+            // 清除所有超时
+            if (autoSpeakTimeout) {
+                clearTimeout(autoSpeakTimeout);
+                autoSpeakTimeout = null;
+            }
+            
+            // 停止语音
+            if (speech) {
+                speech.cancel();
+            }
+            
+            // 更新按钮状态
+            const btn = document.getElementById('autoSpeakBtn');
+            btn.innerHTML = '<span>🔊</span> 开始自动朗读';
+            btn.classList.remove('active');
+            
+            // 隐藏状态指示器
+            document.getElementById('autoSpeakStatus').classList.remove('active');
+            
+            // 移除所有高亮
+            document.querySelectorAll('.word-item.auto-speaking').forEach(item => {
+                item.classList.remove('auto-speaking');
+                item.classList.remove('showing-chinese');
+            });
+            
+            showToast('自动朗读已停止');
+        }
+        
+        function speakNextWordInAutoMode() {
+            if (!isAutoSpeaking) return;
+            
+            const pageWords = getCurrentPageWords();
+            const totalPages = getTotalPages();
+            
+            if (pageWords.length === 0) {
+                stopAutoSpeak();
+                return;
+            }
+            
+            // 更新状态指示器
+            const statusText = document.getElementById('autoSpeakStatusText');
+            const progress = document.getElementById('autoSpeakProgress');
+            const mode = document.getElementById('speakMode').value;
+            const loopMode = document.getElementById('loopMode').value;
+            
+            statusText.textContent = `自动朗读中 - ${mode === 'english-only' ? '仅英文' : mode === 'both' ? '英+中' : '英+中+窍门'}`;
+            progress.textContent = `(${autoSpeakIndex + 1}/${pageWords.length})`;
+            
+            // 如果当前单词索引超出范围
+            if (autoSpeakIndex >= pageWords.length) {
+                if (loopMode === 'page') {
+                    // 本页循环，重置索引
+                    autoSpeakIndex = 0;
+                } else {
+                    // 全部循环，尝试翻页
+                    if (currentPage < totalPages - 1) {
+                        currentPage++;
+                        renderCurrentPage();
+                        autoSpeakIndex = 0;
+                        // 等待页面渲染完成后继续朗读
+                        setTimeout(() => {
+                            speakNextWordInAutoMode();
+                        }, 500);
+                        return;
+                    } else {
+                        // 已经是最后一页，回到第一页
+                        currentPage = 0;
+                        renderCurrentPage();
+                        autoSpeakIndex = 0;
+                        setTimeout(() => {
+                            speakNextWordInAutoMode();
+                        }, 500);
+                        return;
+                    }
+                }
+            }
+            
+            const word = pageWords[autoSpeakIndex];
+            const wordElement = getWordElementByEnglish(word.english);
+            
+            if (!wordElement) {
+                autoSpeakIndex++;
+                autoSpeakTimeout = setTimeout(speakNextWordInAutoMode, 100);
+                return;
+            }
+            
+            // 高亮当前单词
+            document.querySelectorAll('.word-item.auto-speaking').forEach(item => {
+                item.classList.remove('auto-speaking');
+                item.classList.remove('showing-chinese');
+            });
+            wordElement.classList.add('auto-speaking');
+            
+            // 根据模式朗读
+            const speakMode = document.getElementById('speakMode').value;
+            const interval = parseInt(document.getElementById('speakInterval').value) * 1000;
+            
+            if (speakMode === 'english-only') {
+                // 仅朗读英文
+                wordElement.classList.add('showing-chinese');
+                speakText(word.english, 'en-US', () => {
+                    setTimeout(() => {
+                        wordElement.classList.remove('showing-chinese');
+                        autoSpeakIndex++;
+                        autoSpeakTimeout = setTimeout(speakNextWordInAutoMode, interval);
+                    }, 500);
+                });
+            } else if (speakMode === 'both') {
+                // 朗读英文和中文
+                wordElement.classList.add('showing-chinese');
+                speakText(word.english, 'en-US', () => {
+                    setTimeout(() => {
+                        speakText(word.chinese, 'zh-CN', () => {
+                            setTimeout(() => {
+                                wordElement.classList.remove('showing-chinese');
+                                autoSpeakIndex++;
+                                autoSpeakTimeout = setTimeout(speakNextWordInAutoMode, interval);
+                            }, 500);
+                        });
+                    }, 500);
+                });
+            } else if (speakMode === 'english-chinese-tip') {
+                // 朗读英文、中文和窍门
+                wordElement.classList.add('showing-chinese');
+                speakText(word.english, 'en-US', () => {
+                    setTimeout(() => {
+                        speakText(word.chinese, 'zh-CN', () => {
+                            if (word.tip && word.tip.trim() !== '') {
+                                setTimeout(() => {
+                                    speakText(word.tip, 'zh-CN', () => {
+                                        setTimeout(() => {
+                                            wordElement.classList.remove('showing-chinese');
+                                            autoSpeakIndex++;
+                                            autoSpeakTimeout = setTimeout(speakNextWordInAutoMode, interval);
+                                        }, 500);
+                                    });
+                                }, 500);
+                            } else {
+                                setTimeout(() => {
+                                    wordElement.classList.remove('showing-chinese');
+                                    autoSpeakIndex++;
+                                    autoSpeakTimeout = setTimeout(speakNextWordInAutoMode, interval);
+                                }, 500);
+                            }
+                        });
+                    }, 500);
+                });
+            }
+        }
+        
+        // 根据英文单词获取对应的DOM元素
+        function getWordElementByEnglish(english) {
+            const wordItems = document.querySelectorAll('.word-item');
+            for (let item of wordItems) {
+                if (item.dataset.english === english) {
+                    return item;
+                }
+            }
+            return null;
+        }
+        
         // 乱序当前页
         function shuffleCurrentPage() {
+            if (isAutoSpeaking) {
+                stopAutoSpeak();
+            }
+            
             const pageWords = getCurrentPageWords();
             if (pageWords.length === 0) return;
             
@@ -1142,6 +1546,10 @@
         
         // 下一页
         function nextPage() {
+            if (isAutoSpeaking) {
+                stopAutoSpeak();
+            }
+            
             const totalPages = getTotalPages();
             if (currentPage < totalPages - 1) {
                 currentPage++;
@@ -1152,6 +1560,10 @@
         
         // 上一页
         function prevPage() {
+            if (isAutoSpeaking) {
+                stopAutoSpeak();
+            }
+            
             if (currentPage > 0) {
                 currentPage--;
                 renderCurrentPage();
@@ -1212,6 +1624,9 @@
         
         // 模态框功能
         function showAddWordModal() {
+            if (isAutoSpeaking) {
+                stopAutoSpeak();
+            }
             document.getElementById('englishInput').value = '';
             document.getElementById('chineseInput').value = '';
             document.getElementById('tipInput').value = '';
@@ -1224,6 +1639,9 @@
         }
         
         function showImportModal() {
+            if (isAutoSpeaking) {
+                stopAutoSpeak();
+            }
             document.getElementById('importInput').value = '';
             document.getElementById('importModal').style.display = 'flex';
             hideMenu();
@@ -1250,7 +1668,7 @@
             document.getElementById('menu').style.display = 'none';
         }
         
-        // 添加单词（现在包含tip字段）
+        // 添加单词
         function addWord() {
             const english = document.getElementById('englishInput').value.trim();
             const chinese = document.getElementById('chineseInput').value.trim();
@@ -1288,7 +1706,7 @@
             showToast('单词添加成功！');
         }
         
-        // 导入词库（现在支持tip字段）
+        // 导入词库
         function importWords() {
             const json = document.getElementById('importInput').value.trim();
             
@@ -1305,13 +1723,12 @@
                     return;
                 }
                 
-                // 验证格式（现在tip是可选的）
+                // 验证格式
                 for (let item of imported) {
                     if (!item.english || !item.chinese) {
                         showToast('每个单词必须包含english和chinese字段');
                         return;
                     }
-                    // 确保tip字段存在（如果没有则设为空字符串）
                     if (item.tip === undefined) {
                         item.tip = '';
                     }
@@ -1329,7 +1746,7 @@
             }
         }
         
-        // 导出词库（现在包含tip字段）
+        // 导出词库
         function exportWords() {
             if (words.length === 0) {
                 showToast('词库为空，无法导出');
@@ -1353,6 +1770,10 @@
         
         // 清空词库
         function clearWords() {
+            if (isAutoSpeaking) {
+                stopAutoSpeak();
+            }
+            
             words = [];
             currentPage = 0;
             updateDisplay();
@@ -1367,10 +1788,14 @@
                 '1. 点击单词：朗读发音并显示中文和记忆窍门\n' +
                 '2. 左右滑动纸张：切换页面（每页20词）\n' +
                 '3. 乱序排列：重新排列当前页单词位置\n' +
-                '4. 添加单词：右上角菜单 → 添加单词（可添加记忆窍门）\n' +
-                '5. 导入词库：支持JSON格式文件（含tip字段）\n' +
-                '6. 导出词库：备份当前词库（包含记忆窍门）\n\n' +
-                '🔊 点击单词：自动朗读英文，显示中文和记忆窍门5秒\n\n' +
+                '4. 自动朗读：适合开车学习，自动朗读单词和中文\n' +
+                '5. 设置间隔时间：控制自动朗读的停顿时间\n' +
+                '6. 选择模式：仅英文、英文+中文、英文+中文+窍门\n' +
+                '7. 循环模式：本页循环或全部循环\n' +
+                '8. 添加单词：右上角菜单 → 添加单词（可添加记忆窍门）\n' +
+                '9. 导入/导出词库：备份和恢复词库\n\n' +
+                '🚗 开车模式：\n' +
+                '点击"开始自动朗读"，选择模式和间隔时间，即可自动学习\n\n' +
                 '📱 添加到主屏幕：\n' +
                 '用Safari打开 → 分享 → 添加到主屏幕';
             
@@ -1389,6 +1814,13 @@
             try {
                 localStorage.setItem('wordLearnerData', JSON.stringify(words));
                 localStorage.setItem('wordLearnerPage', currentPage.toString());
+                // 保存设置
+                const settings = {
+                    interval: document.getElementById('speakInterval').value,
+                    mode: document.getElementById('speakMode').value,
+                    loop: document.getElementById('loopMode').value
+                };
+                localStorage.setItem('wordLearnerSettings', JSON.stringify(settings));
             } catch (e) {
                 console.error('保存到本地存储失败:', e);
             }
@@ -1409,6 +1841,15 @@
                     if (!isNaN(page) && page >= 0 && page < totalPages) {
                         currentPage = page;
                     }
+                }
+                
+                // 加载设置
+                const savedSettings = localStorage.getItem('wordLearnerSettings');
+                if (savedSettings) {
+                    const settings = JSON.parse(savedSettings);
+                    document.getElementById('speakInterval').value = settings.interval || 3;
+                    document.getElementById('speakMode').value = settings.mode || 'both';
+                    document.getElementById('loopMode').value = settings.loop || 'page';
                 }
             } catch (e) {
                 console.error('从本地存储加载失败:', e);
@@ -1460,6 +1901,11 @@
                 }
             });
             
+            // 设置项变化时保存
+            document.getElementById('speakInterval').addEventListener('change', saveToLocalStorage);
+            document.getElementById('speakMode').addEventListener('change', saveToLocalStorage);
+            document.getElementById('loopMode').addEventListener('change', saveToLocalStorage);
+            
             // 窗口大小变化时重新渲染
             let resizeTimer;
             window.addEventListener('resize', function() {
@@ -1469,6 +1915,13 @@
                         renderCurrentPage();
                     }
                 }, 250);
+            });
+            
+            // 页面卸载前停止自动朗读
+            window.addEventListener('beforeunload', function() {
+                if (isAutoSpeaking) {
+                    stopAutoSpeak();
+                }
             });
             
             // 注册Service Worker
