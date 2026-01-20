@@ -238,10 +238,11 @@
             font-weight: 700;
         }
         
-        .word-separator {
+        /* 移除分隔符样式 */
+        /* .word-separator {
             color: #999;
             margin: 0 1px;
-        }
+        } */
         
         .word-chinese {
             font-size: 14px;
@@ -1625,7 +1626,7 @@
             };
         }
         
-        // 生成词根词缀分色的HTML
+        // 生成词根词缀分色的HTML（去掉分隔符）
         function generateAffixHTML(word) {
             const analysis = analyzeWordAffixes(word);
             const parts = analysis.parts;
@@ -1653,10 +1654,7 @@
                 
                 html += `<span class="${className}">${part}</span>`;
                 
-                // 如果不是最后一个部分，添加分隔符
-                if (i < parts.length - 1) {
-                    html += `<span class="word-separator">-</span>`;
-                }
+                // 移除了分隔符代码
             }
             
             return html;
